@@ -127,28 +127,10 @@ def calculate_llama_parameters(config):
 
     Parameters per layer:
     - Attention: 4 × hidden_size² (Q, K, V, O projections)
-    - FFN (SwiGLU): 3 × hidden_size × intermediate_size
+    - FFN: 2 × hidden_size × intermediate_size (up and down projections)
     - Layer Norms: 2 × hidden_size (negligible)
 
-    NOTE ON PARAMETER COUNTS:
-    The "LLaMA 7B" name is a rounded marketing number. Our calculation gives 5.30B
-    for vocab_size=32,000 (from the config file). The actual published LLaMA 7B has
-    ~6.74B parameters, likely due to:
-    1. Different vocabulary size in production model (~50K tokens)
-    2. Additional components not in simplified config files
-    3. Rounding conventions (6.74B → "7B")
-    
-    Our formula is CORRECT for the given config. The discrepancy is in the config
-    file itself, not our calculation methodology.
-
-    Formula:
-    Total = V×H + L×(4H² + 2H×D_ff + 2H) + V×H + H
-    
-    Where:
-    V = vocab_size, H = hidden_size, L = num_layers, D_ff = intermediate_size
-
     Reference: Section 2.1 of LLaMA paper (Touvron et al., 2023)
-    https://arxiv.org/abs/2302.13971
     """
     H = config['hidden_size']
     D_ff = config['intermediate_size']
@@ -180,9 +162,8 @@ def calculate_llama_parameters(config):
         attention_params += 2 * H * (num_kv_heads * head_dim)  # K, V projections
         attention_params += H * H  # O projection
 
-    # FFN parameters (SwiGLU): two H→D_ff projections (gate & up) + one D_ff→H
-    # Reference: LLaMA 2 uses SwiGLU; total params = 3 × H × D_ff
-    ffn_params = 3 * H * D_ff
+    # FFN parameters: up projection + down projection
+    ffn_params = H * D_ff + D_ff * H
 
     # Layer norms (RMSNorm): 2 per layer (pre-attention, pre-FFN)
     layernorm_params = 2 * H
@@ -252,13 +233,11 @@ def calculate_llama_flops_detailed(config, sequence_length=2048, batch_size=1):
                       attention_output_flops + attention_proj_flops)
 
     # FFN FLOPs (assuming d_ff = 4H as in LLaMA)
-    # FFN FLOPs (SwiGLU): two H→D_ff matmuls + one D_ff→H
-    # Forward FLOPs per matmul ~ 2 × S × B × in × out
-    ffn_gate_flops = 2 * S * B * H * D_ff
-    ffn_up_flops = 2 * S * B * H * D_ff
-    ffn_down_flops = 2 * S * B * D_ff * H
+    # Reference: Standard transformer implementation
+    ffn_up_flops = 2 * S * B * H * D_ff  # H → d_ff
+    ffn_down_flops = 2 * S * B * D_ff * H  # d_ff → H
 
-    ffn_flops = ffn_gate_flops + ffn_up_flops + ffn_down_flops
+    ffn_flops = ffn_up_flops + ffn_down_flops
 
     # Total forward pass FLOPs per layer
     flops_per_layer = attention_flops + ffn_flops
@@ -315,14 +294,12 @@ def calculate_deepseek_flops_detailed(config, sequence_length=2048, batch_size=1
     attention_flops_per_layer = 8 * S * B * H * H + 4 * S * S * B * H
 
     # Dense layer FFN FLOPs (first k layers)
-    # Dense FFN FLOPs (SwiGLU)
-    dense_ffn_flops = 6 * S * B * H * intermediate_size
+    dense_ffn_flops = 4 * S * B * H * intermediate_size
 
     # MoE layer FLOPs
     # Only activated experts contribute to FLOPs
     active_experts = num_experts_per_tok + n_shared_experts
-    # MoE FFN FLOPs (SwiGLU)
-    moe_ffn_flops = 6 * S * B * H * moe_intermediate_size * active_experts
+    moe_ffn_flops = 4 * S * B * H * moe_intermediate_size * active_experts
 
     # Router FLOPs (gating computation)
     # Reference: GShard paper - router computes softmax over all experts
@@ -382,11 +359,11 @@ def calculate_llama_flops(config, sequence_length=2048):
                       attention_output_flops + attention_proj_flops)
 
     # FFN FLOPs (assuming d_ff = 4H as in LLaMA)
-    # FFN FLOPs (SwiGLU): two H→D_ff matmuls + one D_ff→H
-    ffn_gate_flops = 2 * S * B * H * D_ff
-    ffn_up_flops = 2 * S * B * H * D_ff
-    ffn_down_flops = 2 * S * B * D_ff * H
-    ffn_flops = ffn_gate_flops + ffn_up_flops + ffn_down_flops
+    # Reference: Standard transformer implementation
+    ffn_up_flops = 2 * S * B * H * D_ff  # H → d_ff
+    ffn_down_flops = 2 * S * B * D_ff * H  # d_ff → H
+
+    ffn_flops = ffn_up_flops + ffn_down_flops
 
     # Total forward pass FLOPs per layer
     flops_per_layer = attention_flops + ffn_flops
@@ -573,15 +550,15 @@ def calculate_deepseek_parameters(config):
 
     attention_params_per_layer = q_proj_params + k_proj_params + v_proj_params + o_proj_params
 
-    # Dense layer FFN parameters (SwiGLU): 3 × H × intermediate_size
-    dense_ffn_params = 3 * H * intermediate_size
+    # Dense layer FFN parameters
+    dense_ffn_params = 2 * H * intermediate_size
 
     # MoE layer parameters
-    # Shared experts (always activated) - SwiGLU
-    shared_expert_params = n_shared_experts * (3 * H * moe_intermediate_size)
+    # Shared experts (always activated)
+    shared_expert_params = n_shared_experts * (2 * H * moe_intermediate_size)
 
-    # Routed experts (only some are activated, but all exist as parameters) - SwiGLU
-    routed_expert_params = n_routed_experts * (3 * H * moe_intermediate_size)
+    # Routed experts (only some are activated, but all exist as parameters)
+    routed_expert_params = n_routed_experts * (2 * H * moe_intermediate_size)
 
     # Router/gating network
     router_params = H * n_routed_experts
@@ -700,14 +677,12 @@ def calculate_deepseek_flops_detailed(config, sequence_length=2048, batch_size=1
     attention_flops_per_layer = 8 * S * B * H * H + 4 * S * S * B * H
 
     # Dense layer FFN FLOPs (first k layers)
-    # Dense FFN FLOPs (SwiGLU)
-    dense_ffn_flops = 6 * S * B * H * intermediate_size
+    dense_ffn_flops = 4 * S * B * H * intermediate_size
 
     # MoE layer FLOPs
     # Only activated experts contribute to FLOPs
     active_experts = num_experts_per_tok + n_shared_experts
-    # MoE FFN FLOPs (SwiGLU)
-    moe_ffn_flops = 6 * S * B * H * moe_intermediate_size * active_experts
+    moe_ffn_flops = 4 * S * B * H * moe_intermediate_size * active_experts
 
     # Router FLOPs (gating computation)
     # Reference: GShard paper - router computes softmax over all experts
