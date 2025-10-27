@@ -484,11 +484,14 @@ def calculate_llama_memory(config, batch_size=1, sequence_length=2048):
     D_ff = config['intermediate_size']
     num_heads = config['num_attention_heads']
 
+    # Activation memory: approximate saved tensors for backward.
+    # For SwiGLU FFN there are two intermediate streams (gate and up),
+    # which roughly doubles the intermediate activation footprint vs GELU.
     activation_per_layer = batch_size * sequence_length * (
         4 * H +  # QKV + output
         num_heads * sequence_length +  # Attention scores
-        D_ff  # FFN intermediate
-    ) * 2  # FP16
+        2 * D_ff  # FFN intermediate (SwiGLU: gate + up)
+    ) * 2  # FP16 bytes per element
 
     activation_memory = activation_per_layer * L
 
@@ -780,8 +783,8 @@ def calculate_deepseek_memory(config, batch_size=1, sequence_length=2048):
     active_experts = num_experts_per_tok + n_shared_experts
     activation_per_layer = batch_size * sequence_length * (
         4 * H +  # Attention activations
-        moe_intermediate_size * active_experts  # Only activated experts
-    ) * 2  # FP16
+        2 * moe_intermediate_size * active_experts  # SwiGLU: gate + up for activated experts
+    ) * 2  # FP16 bytes per element
 
     activation_memory = activation_per_layer * L
 
