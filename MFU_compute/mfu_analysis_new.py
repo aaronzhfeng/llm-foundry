@@ -300,6 +300,25 @@ def analyze_mfu_config(config_path, achieved_tokens_per_sec=None):
             print(f"  Status: OK - Above minimum MFU ({targets['minimum_acceptable_mfu_percent']}%)")
         else:
             print(f"  Status: POOR - Below minimum MFU ({targets['minimum_acceptable_mfu_percent']}%)")
+        
+        # Calculate training time if training objectives are specified
+        if 'training_objectives' in config:
+            total_training_tokens = config['training_objectives'].get('total_training_tokens', 0)
+            if total_training_tokens > 0:
+                # Time = total_tokens / tokens_per_second
+                training_time_seconds = total_training_tokens / tokens_per_sec
+                training_time_hours = training_time_seconds / 3600
+                training_time_days = training_time_hours / 24
+                
+                print(f"\n  Training Time Estimate (at current throughput):")
+                print(f"    Total training tokens: {total_training_tokens:,.0f} ({total_training_tokens/1e12:.2f}T)")
+                print(f"    Training time: {training_time_hours:,.1f} hours ({training_time_days:.1f} days)")
+                
+                # Cost estimate if available
+                if 'cost_per_hour' in config.get('hardware_specs', {}):
+                    cost_per_hour = config['hardware_specs']['cost_per_hour']
+                    total_cost = training_time_hours * cost_per_hour
+                    print(f"    Estimated cost: ${total_cost:,.2f}")
 
     else:
         # No measurement available, show theoretical analysis
@@ -316,6 +335,25 @@ def analyze_mfu_config(config_path, achieved_tokens_per_sec=None):
             print(f"  Required throughput: {max_throughput:,.0f} tokens/sec")
             print(f"  Current batch size: {config['training_config']['batch_size']}")
             print(f"  Effective tokens per iteration: {config['training_config']['batch_size'] * config['training_config']['sequence_length']:,}")
+            
+            # Calculate training time if training objectives are specified
+            if 'training_objectives' in config:
+                total_training_tokens = config['training_objectives'].get('total_training_tokens', 0)
+                if total_training_tokens > 0:
+                    # Time = total_tokens / tokens_per_second
+                    training_time_seconds = total_training_tokens / max_throughput
+                    training_time_hours = training_time_seconds / 3600
+                    training_time_days = training_time_hours / 24
+                    
+                    print(f"\n  Training Time Estimate (at target MFU):")
+                    print(f"    Total training tokens: {total_training_tokens:,.0f} ({total_training_tokens/1e12:.2f}T)")
+                    print(f"    Training time: {training_time_hours:,.1f} hours ({training_time_days:.1f} days)")
+                    
+                    # Cost estimate if available
+                    if 'cost_per_hour' in config.get('hardware_specs', {}):
+                        cost_per_hour = config['hardware_specs']['cost_per_hour']
+                        total_cost = training_time_hours * cost_per_hour
+                        print(f"    Estimated cost: ${total_cost:,.2f}")
         else:
             print("  Cannot calculate - no FLOPs per token available")
 

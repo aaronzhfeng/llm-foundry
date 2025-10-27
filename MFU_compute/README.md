@@ -26,7 +26,8 @@ This module provides detailed MFU analysis using multiple calculation methods:
 ### ✅ **Hardware Support**
 - **NVIDIA A100**: 312 TFLOPS (FP16), 40GB memory
 - **NVIDIA H100**: 989 TFLOPS (FP16), 80GB memory
-- **NVIDIA B200**: 1000 TFLOPS (FP16), 192GB memory
+- **NVIDIA H200**: 1,979 TFLOPS (FP16), 141GB memory
+- **NVIDIA B200**: 1,000 TFLOPS (FP16), 192GB memory
 - **NVIDIA V100**: 125 TFLOPS (FP16), 32GB memory
 
 ### ✅ **Comprehensive Analysis**
@@ -121,7 +122,71 @@ Performance Analysis (Measured):
   ✓ EXCELLENT - Exceeds target MFU (45%)
 ```
 
-### Example 3: Validation Tests
+### Example 3: DeepSeek V3 on H200 (Latest Hardware)
+
+```bash
+# Theoretical analysis (no throughput measurement)
+python mfu_analysis.py --config deepseek_v3_h200_config.json
+```
+
+**Output (shows required throughput for target MFU)**:
+```
+Performance Analysis (Theoretical):
+  Target MFU: 50%
+  Required throughput: 122,574 tokens/sec
+  Current batch size: 24
+  Effective tokens per iteration: 98,304
+
+  Training Time Estimate (at target MFU):
+    Total training tokens: 1,400,000,000,000 (1.40T)
+    Training time: 3,172.7 hours (132.2 days)
+```
+
+```bash
+# With measured throughput
+python mfu_analysis.py --config deepseek_v3_h200_config.json --throughput 60000
+```
+
+**Output (shows actual MFU and training time)**:
+```
+MFU Analysis: deepseek_v3 on H200
+==================================================
+GPUs: 8 x H200
+Precision: FP16
+Batch size: 24
+Sequence length: 4096
+
+Hardware Specifications:
+  Peak FLOPs per GPU: 1,979 TFLOPS (FP16)
+  Total peak FLOPs: 15.83 PFLOPS
+  Memory per GPU: 141 GB
+
+Model Specifications:
+  Total parameters: 452,260,623,360 (452.26B)
+  FLOPs per token: 64.58 GFLOPs (at S=4096)
+  Dense layers: 3
+  MoE layers: 58
+  Total experts: 256
+  Experts per token: 8
+  MLA compression: Q=1536, KV=512
+
+Performance Analysis (Measured):
+  Achieved throughput: 60,000 tokens/sec
+  Achieved FLOPs: 3.87 PFLOPS
+  MFU achieved: 24.5%
+  Status: POOR - Below minimum MFU (35%)
+
+  Training Time Estimate (at current throughput):
+    Total training tokens: 1,400,000,000,000 (1.40T)
+    Training time: 6,481.5 hours (270.1 days)
+
+Memory Requirements (per GPU):
+  WARNING: Memory usage (633.1GB) exceeds GPU memory (141GB)
+  Note: Requires model parallelism across GPUs
+==================================================
+```
+
+### Example 4: Validation Tests
 
 ```bash
 python mfu_analysis.py --validate
@@ -156,6 +221,7 @@ Typical LLaMA 7B training performance:
 2. **`llama_13b_v100_config.json`** - LLaMA 13B on 16×V100 (FP16)
 3. **`llama_7b_b200_config.json`** - LLaMA 7B on 8×B200 (FP8)
 4. **`deepseek_v3_h100_config.json`** - DeepSeek V3 on 8×H100 (FP8)
+5. **`deepseek_v3_h200_config.json`** - DeepSeek V3 on 8×H200 (FP8)
 
 ### Configuration Format
 
@@ -350,10 +416,13 @@ python mfu_analysis.py --config llama_7b_a100_config.json
 # 2. With measured throughput
 python mfu_analysis.py --config llama_7b_a100_config.json --throughput 45000
 
-# 3. DeepSeek V3 MoE analysis
+# 3. DeepSeek V3 MoE on H100
 python mfu_analysis.py --config deepseek_v3_h100_config.json --throughput 15000
 
-# 4. Run validation
+# 4. DeepSeek V3 MoE on H200 (latest hardware, FP16, longer context)
+python mfu_analysis.py --config deepseek_v3_h200_config.json --throughput 60000
+
+# 5. Run validation
 python mfu_analysis.py --validate
 ```
 
