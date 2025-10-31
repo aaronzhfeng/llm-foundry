@@ -1,0 +1,64 @@
+# PyTorch checkpoints and model files (typically 500MB - 1GB+)
+*.pt
+*.pth
+*.ckpt
+*.bin  # Except for data/*.bin which are needed
+
+# Keep data/*.bin files (tokenized datasets)
+!data/**/*.bin
+!nanoGPT/data/**/*.bin
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Training outputs (keep JSON logs, exclude checkpoints)
+out/ckpt.pt
+out-*/
+logs/
+
+# Compiled model cache (torch.compile artifacts)
+*.compiled
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Generated plots (optional - uncomment if you don't want to commit plots)
+# *.png
+# *.jpg
+# *.pdf
+
+# Large numpy arrays
+*.npy
+*.npz
+
+# Weights & Biases
+wandb/
+
+# TensorBoard
+runs/
+tb_logs/
+

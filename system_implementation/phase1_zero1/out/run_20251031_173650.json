@@ -1,0 +1,110 @@
+{
+  "run_name": "run_20251031_173650",
+  "start_time": "2025-10-31T17:36:50.149476",
+  "config": {
+    "LOGGER_AVAILABLE": true,
+    "out_dir": "out",
+    "eval_interval": 10,
+    "log_interval": 5,
+    "eval_iters": 200,
+    "eval_only": false,
+    "always_save_checkpoint": true,
+    "init_from": "scratch",
+    "save_log_to_json": true,
+    "log_save_interval": 100,
+    "wandb_log": false,
+    "wandb_project": "owt",
+    "wandb_run_name": "gpt2",
+    "dataset": "shakespeare",
+    "gradient_accumulation_steps": 40,
+    "batch_size": 12,
+    "block_size": 1024,
+    "n_layer": 12,
+    "n_head": 12,
+    "n_embd": 768,
+    "dropout": 0.0,
+    "bias": false,
+    "learning_rate": 0.0006,
+    "max_iters": 15,
+    "weight_decay": 0.1,
+    "beta1": 0.9,
+    "beta2": 0.95,
+    "grad_clip": 1.0,
+    "decay_lr": true,
+    "warmup_iters": 2000,
+    "lr_decay_iters": 600000,
+    "min_lr": 6e-05,
+    "backend": "nccl",
+    "use_zero1": false,
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "compile": false
+  },
+  "training_iterations": [
+    {
+      "iter": 0,
+      "loss": 11.004893779754639,
+      "time_ms": 19155.736446380615,
+      "mfu": -100.0
+    },
+    {
+      "iter": 5,
+      "loss": 10.608940124511719,
+      "time_ms": 4018.3684825897217,
+      "mfu": 33.51090848921254
+    },
+    {
+      "iter": 10,
+      "loss": 9.893466234207153,
+      "time_ms": 30077.308654785156,
+      "mfu": 30.60752783950346
+    },
+    {
+      "iter": 15,
+      "loss": 9.476632475852966,
+      "time_ms": 4039.642095565796,
+      "mfu": 30.880218348557015
+    }
+  ],
+  "eval_steps": [
+    {
+      "iter": 0,
+      "train_loss": 11.00401496887207,
+      "val_loss": 10.997650146484375,
+      "timestamp": "2025-10-31T17:37:05.191825",
+      "lr": 2.998500749625187e-07
+    },
+    {
+      "iter": 10,
+      "train_loss": 9.90831184387207,
+      "val_loss": 9.856417655944824,
+      "timestamp": "2025-10-31T17:38:04.246963",
+      "lr": 3.2983508245877057e-06
+    }
+  ],
+  "checkpoints": [
+    {
+      "iter": 10,
+      "val_loss": 9.856417655944824,
+      "path": "out/ckpt.pt",
+      "timestamp": "2025-10-31T17:38:11.438886"
+    }
+  ],
+  "metadata": {
+    "world_size": 1,
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "compile": false
+  },
+  "end_time": "2025-10-31T17:38:35.729436",
+  "summary": {
+    "total_iterations": 4,
+    "final_iter": 15,
+    "final_train_loss": 9.476632475852966,
+    "best_val_loss": 9.856417655944824,
+    "avg_time_ms": 14322.763919830322,
+    "avg_mfu": 31.66621822575767,
+    "total_eval_steps": 2,
+    "total_checkpoints": 1
+  }
+}
