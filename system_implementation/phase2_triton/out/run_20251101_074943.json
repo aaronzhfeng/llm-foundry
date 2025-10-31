@@ -1,0 +1,109 @@
+{
+  "run_name": "run_20251101_074943",
+  "start_time": "2025-11-01T07:49:43.822127",
+  "config": {
+    "LOGGER_AVAILABLE": true,
+    "out_dir": "out",
+    "eval_interval": 10,
+    "log_interval": 5,
+    "eval_iters": 200,
+    "eval_only": false,
+    "always_save_checkpoint": true,
+    "init_from": "scratch",
+    "save_log_to_json": true,
+    "log_save_interval": 100,
+    "wandb_log": false,
+    "wandb_project": "owt",
+    "wandb_run_name": "gpt2",
+    "dataset": "shakespeare",
+    "gradient_accumulation_steps": 40,
+    "batch_size": 12,
+    "block_size": 1024,
+    "n_layer": 12,
+    "n_head": 12,
+    "n_embd": 768,
+    "dropout": 0.0,
+    "bias": false,
+    "learning_rate": 0.0006,
+    "max_iters": 15,
+    "weight_decay": 0.1,
+    "beta1": 0.9,
+    "beta2": 0.95,
+    "grad_clip": 1.0,
+    "decay_lr": true,
+    "warmup_iters": 2000,
+    "lr_decay_iters": 600000,
+    "min_lr": 6e-05,
+    "backend": "nccl",
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "compile": false
+  },
+  "training_iterations": [
+    {
+      "iter": 0,
+      "loss": 11.004694700241089,
+      "time_ms": 18880.03396987915,
+      "mfu": -100.0
+    },
+    {
+      "iter": 5,
+      "loss": 10.609065294265747,
+      "time_ms": 4459.756851196289,
+      "mfu": 30.194287040532018
+    },
+    {
+      "iter": 10,
+      "loss": 9.89342212677002,
+      "time_ms": 24682.374238967896,
+      "mfu": 27.720426510724405
+    },
+    {
+      "iter": 15,
+      "loss": 9.476836323738098,
+      "time_ms": 4530.594825744629,
+      "mfu": 27.92060238007258
+    }
+  ],
+  "eval_steps": [
+    {
+      "iter": 0,
+      "train_loss": 11.003974914550781,
+      "val_loss": 10.9976167678833,
+      "timestamp": "2025-11-01T07:49:58.158771",
+      "lr": 2.998500749625187e-07
+    },
+    {
+      "iter": 10,
+      "train_loss": 9.90837287902832,
+      "val_loss": 9.856464385986328,
+      "timestamp": "2025-11-01T07:50:57.335512",
+      "lr": 3.2983508245877057e-06
+    }
+  ],
+  "checkpoints": [
+    {
+      "iter": 10,
+      "val_loss": 9.856464385986328,
+      "path": "out/ckpt.pt",
+      "timestamp": "2025-11-01T07:51:03.043347"
+    }
+  ],
+  "metadata": {
+    "world_size": 1,
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "compile": false
+  },
+  "end_time": "2025-11-01T07:51:30.267166",
+  "summary": {
+    "total_iterations": 4,
+    "final_iter": 15,
+    "final_train_loss": 9.476836323738098,
+    "best_val_loss": 9.856464385986328,
+    "avg_time_ms": 13138.189971446991,
+    "avg_mfu": 28.61177197710967,
+    "total_eval_steps": 2,
+    "total_checkpoints": 1
+  }
+}

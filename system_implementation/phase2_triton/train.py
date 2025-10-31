@@ -29,6 +29,13 @@ from torch.distributed import init_process_group, destroy_process_group
 
 from model import GPTConfig, GPT
 
+# Try to import training logger (optional)
+try:
+    from training_logger import TrainingLogger
+    LOGGER_AVAILABLE = True
+except ImportError:
+    LOGGER_AVAILABLE = False
+
 # -----------------------------------------------------------------------------
 # default config values designed to train a gpt2 (124M) on OpenWebText
 # I/O
@@ -39,6 +46,9 @@ eval_iters = 200
 eval_only = False # if True, script exits right after the first eval
 always_save_checkpoint = True # if True, always save a checkpoint after each eval
 init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
+# logging
+save_log_to_json = True # save training logs to JSON file
+log_save_interval = 100 # save log every N iterations
 # wandb logging
 wandb_log = False # disabled by default
 wandb_project = 'owt'
@@ -246,6 +256,17 @@ if wandb_log and master_process:
     import wandb
     wandb.init(project=wandb_project, name=wandb_run_name, config=config)
 
+# Initialize JSON logger
+json_logger = None
+if save_log_to_json and master_process and LOGGER_AVAILABLE:
+    json_logger = TrainingLogger(out_dir=out_dir, config=config)
+    json_logger.log_metadata('world_size', ddp_world_size)
+    json_logger.log_metadata('device', device)
+    json_logger.log_metadata('dtype', dtype)
+    json_logger.log_metadata('compile', compile)
+elif save_log_to_json and master_process and not LOGGER_AVAILABLE:
+    print("Warning: training_logger not found, JSON logging disabled")
+
 # training loop
 X, Y = get_batch('train') # fetch the very first batch
 t0 = time.time()
@@ -271,6 +292,11 @@ while True:
                 "lr": lr,
                 "mfu": running_mfu*100, # convert to percentage
             })
+        
+        # Log to JSON
+        if json_logger:
+            json_logger.log_eval(iter_num, losses['train'], losses['val'], lr=lr)
+        
         if losses['val'] < best_val_loss or always_save_checkpoint:
             best_val_loss = losses['val']
             if iter_num > 0:
@@ -283,7 +309,12 @@ while True:
                     'config': config,
                 }
                 print(f"saving checkpoint to {out_dir}")
-                torch.save(checkpoint, os.path.join(out_dir, 'ckpt.pt'))
+                ckpt_path = os.path.join(out_dir, 'ckpt.pt')
+                torch.save(checkpoint, ckpt_path)
+                
+                # Log checkpoint to JSON
+                if json_logger:
+                    json_logger.log_checkpoint(iter_num, losses['val'], ckpt_path)
     if iter_num == 0 and eval_only:
         break
 
@@ -325,12 +356,26 @@ while True:
             mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
             running_mfu = mfu if running_mfu == -1.0 else 0.9*running_mfu + 0.1*mfu
         print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%")
+        
+        # Log to JSON
+        if json_logger:
+            json_logger.log_iter(iter_num, lossf, dt*1000, running_mfu*100)
+            # Auto-save periodically
+            if iter_num % log_save_interval == 0:
+                json_logger.save()
+    
     iter_num += 1
     local_iter_num += 1
 
     # termination conditions
     if iter_num > max_iters:
         break
+
+# Finalize and save JSON log
+if json_logger and master_process:
+    json_logger.finalize(final_iter=iter_num-1, best_val_loss=best_val_loss)
+    json_logger.save()
+    print(f"Training log saved to: {json_logger.log_file}")
 
 if ddp:
     destroy_process_group()
