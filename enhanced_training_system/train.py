@@ -599,26 +599,30 @@ while True:
         param_group['lr'] = lr
 
     # evaluate the loss on train/val sets and write checkpoints
-    if iter_num % eval_interval == 0 and master_process:
+    if iter_num % eval_interval == 0:
+        # All ranks must run evaluation to keep FSDP synchronized
         losses = estimate_loss()
-        print(f"\n{'━'*80}")
-        print(f"📊 EVALUATION │ Step {iter_num:>6d}")
-        print(f"{'━'*80}")
-        print(f"  Train loss: {losses['train']:.4f} │ Val loss: {losses['val']:.4f} │ LR: {lr:.2e}")
-        print(f"{'━'*80}\n")
         
-        if wandb_log:
-            wandb.log({
-                "iter": iter_num,
-                "train/loss": losses['train'],
-                "val/loss": losses['val'],
-                "lr": lr,
-                "mfu": running_mfu*100, # convert to percentage
-            })
-        
-        # Log to JSON
-        if json_logger:
-            json_logger.log_eval(iter_num, losses['train'], losses['val'], lr=lr)
+        # Only master process logs and prints
+        if master_process:
+            print(f"\n{'━'*80}")
+            print(f"📊 EVALUATION │ Step {iter_num:>6d}")
+            print(f"{'━'*80}")
+            print(f"  Train loss: {losses['train']:.4f} │ Val loss: {losses['val']:.4f} │ LR: {lr:.2e}")
+            print(f"{'━'*80}\n")
+            
+            if wandb_log:
+                wandb.log({
+                    "iter": iter_num,
+                    "train/loss": losses['train'],
+                    "val/loss": losses['val'],
+                    "lr": lr,
+                    "mfu": running_mfu*100, # convert to percentage
+                })
+            
+            # Log to JSON
+            if json_logger:
+                json_logger.log_eval(iter_num, losses['train'], losses['val'], lr=lr)
         
         if losses['val'] < best_val_loss or always_save_checkpoint:
             best_val_loss = losses['val']
@@ -655,41 +659,43 @@ while True:
                         if json_logger:
                             json_logger.log_checkpoint(iter_num, losses['val'], ckpt_path)
                 elif ddp and use_zero1:
-                    # ZeRO-1 checkpoint saving
+                    # ZeRO-1 checkpoint saving (all ranks participate)
                     optimizer.consolidate_state_dict(to=0)
                     
-                    checkpoint = {
-                        'model': raw_model.state_dict(),
-                        'optimizer': optimizer.state_dict() if ddp_rank == 0 else None,
-                        'model_args': model_args,
-                        'iter_num': iter_num,
-                        'best_val_loss': best_val_loss,
-                        'config': config,
-                    }
-                    print(f"💾 Saving checkpoint to {out_dir}")
-                    ckpt_path = os.path.join(out_dir, 'ckpt.pt')
-                    torch.save(checkpoint, ckpt_path)
-                    
-                    # Log checkpoint to JSON
-                    if json_logger:
-                        json_logger.log_checkpoint(iter_num, losses['val'], ckpt_path)
+                    if master_process:
+                        checkpoint = {
+                            'model': raw_model.state_dict(),
+                            'optimizer': optimizer.state_dict(),
+                            'model_args': model_args,
+                            'iter_num': iter_num,
+                            'best_val_loss': best_val_loss,
+                            'config': config,
+                        }
+                        print(f"💾 Saving checkpoint to {out_dir}")
+                        ckpt_path = os.path.join(out_dir, 'ckpt.pt')
+                        torch.save(checkpoint, ckpt_path)
+                        
+                        # Log checkpoint to JSON
+                        if json_logger:
+                            json_logger.log_checkpoint(iter_num, losses['val'], ckpt_path)
                 else:
                     # Standard DDP or single GPU checkpoint
-                    checkpoint = {
-                        'model': raw_model.state_dict(),
-                        'optimizer': optimizer.state_dict(),
-                        'model_args': model_args,
-                        'iter_num': iter_num,
-                        'best_val_loss': best_val_loss,
-                        'config': config,
-                    }
-                    print(f"💾 Saving checkpoint to {out_dir}")
-                    ckpt_path = os.path.join(out_dir, 'ckpt.pt')
-                    torch.save(checkpoint, ckpt_path)
-                    
-                    # Log checkpoint to JSON
-                    if json_logger:
-                        json_logger.log_checkpoint(iter_num, losses['val'], ckpt_path)
+                    if master_process:
+                        checkpoint = {
+                            'model': raw_model.state_dict(),
+                            'optimizer': optimizer.state_dict(),
+                            'model_args': model_args,
+                            'iter_num': iter_num,
+                            'best_val_loss': best_val_loss,
+                            'config': config,
+                        }
+                        print(f"💾 Saving checkpoint to {out_dir}")
+                        ckpt_path = os.path.join(out_dir, 'ckpt.pt')
+                        torch.save(checkpoint, ckpt_path)
+                        
+                        # Log checkpoint to JSON
+                        if json_logger:
+                            json_logger.log_checkpoint(iter_num, losses['val'], ckpt_path)
     if iter_num == 0 and eval_only:
         break
 

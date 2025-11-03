@@ -1,0 +1,2113 @@
+{
+  "run_name": "run_20251104_042513",
+  "start_time": "2025-11-04T04:25:13.008455",
+  "config": {
+    "MODULAR_ARCH_AVAILABLE": true,
+    "LOGGER_AVAILABLE": true,
+    "out_dir": "out-gpt2",
+    "eval_interval": 2000,
+    "log_interval": 10,
+    "eval_iters": 200,
+    "eval_only": false,
+    "always_save_checkpoint": true,
+    "init_from": "scratch",
+    "save_log_to_json": true,
+    "log_save_interval": 100,
+    "gradient_log_interval": 50,
+    "wandb_log": false,
+    "wandb_project": "owt",
+    "wandb_run_name": "gpt2",
+    "dataset": "shakespeare",
+    "gradient_accumulation_steps": 40,
+    "batch_size": 12,
+    "block_size": 1024,
+    "n_layer": 12,
+    "n_head": 12,
+    "n_embd": 768,
+    "dropout": 0.0,
+    "bias": false,
+    "arch_preset": "gpt2",
+    "normalization": "layernorm_nobias",
+    "activation": "gelu",
+    "attention_backend": "sdpa",
+    "position_encoding": "learned_absolute",
+    "norm_position": "post",
+    "ffn_type": "standard",
+    "weight_tying": true,
+    "rope_theta": 10000.0,
+    "learning_rate": 0.0006,
+    "max_iters": 2000,
+    "weight_decay": 0.1,
+    "beta1": 0.9,
+    "beta2": 0.95,
+    "grad_clip": 1.0,
+    "decay_lr": true,
+    "warmup_iters": 2000,
+    "lr_decay_iters": 600000,
+    "min_lr": 6e-05,
+    "backend": "nccl",
+    "use_zero1": false,
+    "use_fsdp": false,
+    "fsdp_min_num_params": 1000000.0,
+    "fsdp_activation_checkpointing": false,
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "compile": false
+  },
+  "startup_info": {
+    "timestamp": "2025-11-04T04:25:13.010253",
+    "model": {
+      "total_params": 124373760,
+      "trainable_params": 124373760,
+      "non_embedding_params": 123587328
+    },
+    "optimizer": {
+      "type": "AdamW",
+      "param_groups": 2
+    },
+    "config": {
+      "MODULAR_ARCH_AVAILABLE": true,
+      "LOGGER_AVAILABLE": true,
+      "out_dir": "out-gpt2",
+      "eval_interval": 2000,
+      "log_interval": 10,
+      "eval_iters": 200,
+      "eval_only": false,
+      "always_save_checkpoint": true,
+      "init_from": "scratch",
+      "save_log_to_json": true,
+      "log_save_interval": 100,
+      "gradient_log_interval": 50,
+      "wandb_log": false,
+      "wandb_project": "owt",
+      "wandb_run_name": "gpt2",
+      "dataset": "shakespeare",
+      "gradient_accumulation_steps": 40,
+      "batch_size": 12,
+      "block_size": 1024,
+      "n_layer": 12,
+      "n_head": 12,
+      "n_embd": 768,
+      "dropout": 0.0,
+      "bias": false,
+      "arch_preset": "gpt2",
+      "normalization": "layernorm_nobias",
+      "activation": "gelu",
+      "attention_backend": "sdpa",
+      "position_encoding": "learned_absolute",
+      "norm_position": "post",
+      "ffn_type": "standard",
+      "weight_tying": true,
+      "rope_theta": 10000.0,
+      "learning_rate": 0.0006,
+      "max_iters": 2000,
+      "weight_decay": 0.1,
+      "beta1": 0.9,
+      "beta2": 0.95,
+      "grad_clip": 1.0,
+      "decay_lr": true,
+      "warmup_iters": 2000,
+      "lr_decay_iters": 600000,
+      "min_lr": 6e-05,
+      "backend": "nccl",
+      "use_zero1": false,
+      "use_fsdp": false,
+      "fsdp_min_num_params": 1000000.0,
+      "fsdp_activation_checkpointing": false,
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "compile": false
+    },
+    "hardware": {
+      "gpu_name": "NVIDIA A100-PCIE-40GB",
+      "num_gpus": 1,
+      "gpu_memory_gb": 42.285268992,
+      "precision": "bfloat16",
+      "parallelism": "single"
+    }
+  },
+  "training_iterations": [
+    {
+      "iter": 0,
+      "loss": 10.897799730300903,
+      "time_ms": 18593.323469161987,
+      "mfu": -100.0
+    },
+    {
+      "iter": 10,
+      "loss": 10.893745422363281,
+      "time_ms": 3971.2774753570557,
+      "mfu": {
+        "mfu": 0.47174945623627973,
+        "mfu_percent": 47.17494562362797,
+        "flops_achieved": 147185830345719.28,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 123768.73765432563,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 147.18583034571927,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 20,
+      "loss": 10.817350149154663,
+      "time_ms": 3999.2074966430664,
+      "mfu": {
+        "mfu": 0.46845481039322134,
+        "mfu_percent": 46.84548103932214,
+        "flops_achieved": 146157900842685.06,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 122904.35052759372,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 146.15790084268505,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 30,
+      "loss": 10.616360902786255,
+      "time_ms": 4038.9463901519775,
+      "mfu": {
+        "mfu": 0.46384571831184485,
+        "mfu_percent": 46.38457183118449,
+        "flops_achieved": 144719864113295.6,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121695.10375241823,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.71986411329559,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 40,
+      "loss": 10.245018005371094,
+      "time_ms": 4039.365530014038,
+      "mfu": {
+        "mfu": 0.463797587923806,
+        "mfu_percent": 46.3797587923806,
+        "flops_achieved": 144704847432227.47,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121682.47620766616,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.70484743222747,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 50,
+      "loss": 9.64845597743988,
+      "time_ms": 4038.3663177490234,
+      "mfu": {
+        "mfu": 0.4639123452791011,
+        "mfu_percent": 46.39123452791011,
+        "flops_achieved": 144740651727079.53,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121712.5840812708,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.74065172707952,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 60,
+      "loss": 9.22580361366272,
+      "time_ms": 4050.8034229278564,
+      "mfu": {
+        "mfu": 0.4624880039745247,
+        "mfu_percent": 46.24880039745247,
+        "flops_achieved": 144296257240051.72,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121338.89223504634,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.29625724005172,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 70,
+      "loss": 8.979262709617615,
+      "time_ms": 4035.266876220703,
+      "mfu": {
+        "mfu": 0.46426867095285806,
+        "mfu_percent": 46.42686709528581,
+        "flops_achieved": 144851825337291.72,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121806.07010070702,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.85182533729173,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 80,
+      "loss": 8.772699236869812,
+      "time_ms": 4041.7990684509277,
+      "mfu": {
+        "mfu": 0.46351833869888553,
+        "mfu_percent": 46.35183386988855,
+        "flops_achieved": 144617721674052.28,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121609.2120552597,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.6177216740523,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 90,
+      "loss": 8.694308400154114,
+      "time_ms": 4038.4654998779297,
+      "mfu": {
+        "mfu": 0.4639009518887076,
+        "mfu_percent": 46.39009518887076,
+        "flops_achieved": 144737096989276.78,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121709.59489807629,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.73709698927678,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 100,
+      "loss": 8.473201990127563,
+      "time_ms": 4036.1571311950684,
+      "mfu": {
+        "mfu": 0.46416626723557874,
+        "mfu_percent": 46.416626723557876,
+        "flops_achieved": 144819875377500.56,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121779.20334198324,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.81987537750055,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 110,
+      "loss": 8.194342851638794,
+      "time_ms": 4043.4584617614746,
+      "mfu": {
+        "mfu": 0.4633281155921498,
+        "mfu_percent": 46.33281155921498,
+        "flops_achieved": 144558372064750.75,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121559.30489907305,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.55837206475076,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 120,
+      "loss": 7.912374138832092,
+      "time_ms": 4035.801887512207,
+      "mfu": {
+        "mfu": 0.46420712457665464,
+        "mfu_percent": 46.420712457665466,
+        "flops_achieved": 144832622867916.25,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121789.92272164978,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.83262286791626,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 130,
+      "loss": 7.638906836509705,
+      "time_ms": 4040.086269378662,
+      "mfu": {
+        "mfu": 0.4637148478146732,
+        "mfu_percent": 46.37148478146732,
+        "flops_achieved": 144679032518178.03,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121660.76841611415,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.67903251817802,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 140,
+      "loss": 7.356938719749451,
+      "time_ms": 4045.994997024536,
+      "mfu": {
+        "mfu": 0.4630376436305108,
+        "mfu_percent": 46.30376436305108,
+        "flops_achieved": 144467744812719.38,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121483.09633636932,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.4677448127194,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 150,
+      "loss": 7.057262063026428,
+      "time_ms": 4035.062313079834,
+      "mfu": {
+        "mfu": 0.4642922077040079,
+        "mfu_percent": 46.42922077040079,
+        "flops_achieved": 144859168803650.47,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121812.24523019535,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.85916880365048,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 160,
+      "loss": 6.782779693603516,
+      "time_ms": 4039.5524501800537,
+      "mfu": {
+        "mfu": 0.4637761268527587,
+        "mfu_percent": 46.37761268527587,
+        "flops_achieved": 144698151578060.72,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121676.84565603094,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.69815157806073,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 170,
+      "loss": 6.680948734283447,
+      "time_ms": 4033.907175064087,
+      "mfu": {
+        "mfu": 0.46442516108053805,
+        "mfu_percent": 46.4425161080538,
+        "flops_achieved": 144900650257127.88,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121847.12703315767,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.90065025712786,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 180,
+      "loss": 6.318042278289795,
+      "time_ms": 4036.76176071167,
+      "mfu": {
+        "mfu": 0.46409674402801354,
+        "mfu_percent": 46.40967440280136,
+        "flops_achieved": 144798184136740.22,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121760.9631521446,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.79818413674022,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 190,
+      "loss": 6.076008677482605,
+      "time_ms": 4044.7726249694824,
+      "mfu": {
+        "mfu": 0.46317757838791046,
+        "mfu_percent": 46.317757838791046,
+        "flops_achieved": 144511404457028.06,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121519.80978256064,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.51140445702805,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 200,
+      "loss": 5.900422930717468,
+      "time_ms": 4034.175157546997,
+      "mfu": {
+        "mfu": 0.46439431021191396,
+        "mfu_percent": 46.439431021191396,
+        "flops_achieved": 144891024786117.16,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121839.03296327656,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.89102478611716,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 210,
+      "loss": 5.687475800514221,
+      "time_ms": 4046.1411476135254,
+      "mfu": {
+        "mfu": 0.46302091825641434,
+        "mfu_percent": 46.30209182564143,
+        "flops_achieved": 144462526496001.28,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121478.7082477105,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.4625264960013,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 220,
+      "loss": 5.419338345527649,
+      "time_ms": 4035.101890563965,
+      "mfu": {
+        "mfu": 0.46428765378740783,
+        "mfu_percent": 46.428765378740785,
+        "flops_achieved": 144857747981671.25,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121811.0504593238,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.85774798167125,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 230,
+      "loss": 5.314253568649292,
+      "time_ms": 4036.9656085968018,
+      "mfu": {
+        "mfu": 0.4640733093127003,
+        "mfu_percent": 46.40733093127003,
+        "flops_achieved": 144790872505562.5,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121754.81479289742,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.7908725055625,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 240,
+      "loss": 5.067143440246582,
+      "time_ms": 4037.645101547241,
+      "mfu": {
+        "mfu": 0.46399521068485294,
+        "mfu_percent": 46.39952106848529,
+        "flops_achieved": 144766505733674.12,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121734.32474578997,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.76650573367414,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 250,
+      "loss": 4.8632365465164185,
+      "time_ms": 4038.8386249542236,
+      "mfu": {
+        "mfu": 0.4638580947473015,
+        "mfu_percent": 46.38580947473015,
+        "flops_achieved": 144723725561158.06,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121698.35084846226,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.72372556115806,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 260,
+      "loss": 4.941235184669495,
+      "time_ms": 4041.468620300293,
+      "mfu": {
+        "mfu": 0.4635562379855554,
+        "mfu_percent": 46.35562379855554,
+        "flops_achieved": 144629546251493.28,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121619.15535632159,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.62954625149328,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 270,
+      "loss": 4.8997169733047485,
+      "time_ms": 4040.0073528289795,
+      "mfu": {
+        "mfu": 0.46372390591101564,
+        "mfu_percent": 46.37239059110156,
+        "flops_achieved": 144681858644236.88,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121663.14490883722,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.68185864423688,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 280,
+      "loss": 4.564324915409088,
+      "time_ms": 4035.0894927978516,
+      "mfu": {
+        "mfu": 0.4642890803058905,
+        "mfu_percent": 46.42890803058905,
+        "flops_achieved": 144858193055437.84,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121811.42472237702,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.85819305543785,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 290,
+      "loss": 4.7139811515808105,
+      "time_ms": 4049.7963428497314,
+      "mfu": {
+        "mfu": 0.4626030128331793,
+        "mfu_percent": 46.26030128331793,
+        "flops_achieved": 144332140003951.94,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121369.06609336576,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.33214000395193,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 300,
+      "loss": 4.389940798282623,
+      "time_ms": 4036.213159561157,
+      "mfu": {
+        "mfu": 0.46415982394913213,
+        "mfu_percent": 46.415982394913215,
+        "flops_achieved": 144817865072129.22,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121777.51287383474,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.81786507212922,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 310,
+      "loss": 4.44517195224762,
+      "time_ms": 4043.9724922180176,
+      "mfu": {
+        "mfu": 0.4632692218278512,
+        "mfu_percent": 46.32692218278512,
+        "flops_achieved": 144539997210289.56,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121543.85346236952,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.53999721028956,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 320,
+      "loss": 4.42269891500473,
+      "time_ms": 4037.281274795532,
+      "mfu": {
+        "mfu": 0.46403702443495404,
+        "mfu_percent": 46.403702443495405,
+        "flops_achieved": 144779551623705.66,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121745.29505004403,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.77955162370566,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 330,
+      "loss": 4.356308579444885,
+      "time_ms": 4045.063257217407,
+      "mfu": {
+        "mfu": 0.4631442997140714,
+        "mfu_percent": 46.31442997140714,
+        "flops_achieved": 144501021510790.28,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121511.07875087121,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.50102151079028,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 340,
+      "loss": 4.237070679664612,
+      "time_ms": 4045.008420944214,
+      "mfu": {
+        "mfu": 0.46315057834311346,
+        "mfu_percent": 46.31505783431135,
+        "flops_achieved": 144502980443051.4,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121512.72601931098,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.5029804430514,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 350,
+      "loss": 4.253212511539459,
+      "time_ms": 4036.9951725006104,
+      "mfu": {
+        "mfu": 0.4640699107902621,
+        "mfu_percent": 46.40699107902621,
+        "flops_achieved": 144789812166561.78,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121753.92315258601,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.78981216656177,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 360,
+      "loss": 4.150569438934326,
+      "time_ms": 4032.20272064209,
+      "mfu": {
+        "mfu": 0.464621478471883,
+        "mfu_percent": 46.4621478471883,
+        "flops_achieved": 144961901283227.5,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121898.63309296368,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.9619012832275,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 370,
+      "loss": 4.130567014217377,
+      "time_ms": 4036.9393825531006,
+      "mfu": {
+        "mfu": 0.46407632417265665,
+        "mfu_percent": 46.40763241726567,
+        "flops_achieved": 144791813141868.88,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121755.60577507253,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.7918131418689,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 380,
+      "loss": 4.204123914241791,
+      "time_ms": 4037.57643699646,
+      "mfu": {
+        "mfu": 0.4640031015627604,
+        "mfu_percent": 46.40031015627604,
+        "flops_achieved": 144768967687581.25,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121736.39500572282,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.76896768758124,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 390,
+      "loss": 3.974948227405548,
+      "time_ms": 4047.5590229034424,
+      "mfu": {
+        "mfu": 0.46285872027116065,
+        "mfu_percent": 46.28587202711606,
+        "flops_achieved": 144411920724602.12,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121436.15379508836,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.4119207246021,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 400,
+      "loss": 4.013827443122864,
+      "time_ms": 4039.0334129333496,
+      "mfu": {
+        "mfu": 0.4638357245483851,
+        "mfu_percent": 46.383572454838514,
+        "flops_achieved": 144716746059096.16,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121692.48177697876,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.71674605909615,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 410,
+      "loss": 3.997609317302704,
+      "time_ms": 4037.4574661254883,
+      "mfu": {
+        "mfu": 0.46401677424008025,
+        "mfu_percent": 46.40167742400803,
+        "flops_achieved": 144773233562905.03,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121739.9821852942,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.77323356290503,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 420,
+      "loss": 4.096155762672424,
+      "time_ms": 4039.5870208740234,
+      "mfu": {
+        "mfu": 0.46377215786719933,
+        "mfu_percent": 46.37721578671993,
+        "flops_achieved": 144696913254566.2,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121675.80434834957,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.6969132545662,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 430,
+      "loss": 3.855815827846527,
+      "time_ms": 4038.501977920532,
+      "mfu": {
+        "mfu": 0.4638967616719443,
+        "mfu_percent": 46.38967616719443,
+        "flops_achieved": 144735789641646.62,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121708.49554791821,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.73578964164662,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 440,
+      "loss": 4.0021902322769165,
+      "time_ms": 4054.110050201416,
+      "mfu": {
+        "mfu": 0.4621107879076939,
+        "mfu_percent": 46.21107879076939,
+        "flops_achieved": 144178565827200.5,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121239.92538771372,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.1785658272005,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 450,
+      "loss": 3.652443587779999,
+      "time_ms": 4041.490316390991,
+      "mfu": {
+        "mfu": 0.46355374945845385,
+        "mfu_percent": 46.355374945845384,
+        "flops_achieved": 144628769831037.6,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121618.50246344825,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.6287698310376,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 460,
+      "loss": 3.7668579816818237,
+      "time_ms": 4036.012649536133,
+      "mfu": {
+        "mfu": 0.4641828835145986,
+        "mfu_percent": 46.41828835145986,
+        "flops_achieved": 144825059656554.75,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121783.56280833049,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.82505965655474,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 470,
+      "loss": 3.714261054992676,
+      "time_ms": 4040.334701538086,
+      "mfu": {
+        "mfu": 0.4636863349093053,
+        "mfu_percent": 46.36863349093053,
+        "flops_achieved": 144670136491703.25,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121653.2877370003,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.67013649170326,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 480,
+      "loss": 3.650692105293274,
+      "time_ms": 4035.794973373413,
+      "mfu": {
+        "mfu": 0.464207919858008,
+        "mfu_percent": 46.420791985800804,
+        "flops_achieved": 144832870995698.5,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121790.13137259339,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.8328709956985,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 490,
+      "loss": 3.6822232604026794,
+      "time_ms": 4047.118663787842,
+      "mfu": {
+        "mfu": 0.4629090830288753,
+        "mfu_percent": 46.29090830288753,
+        "flops_achieved": 144427633905009.1,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121449.3670269527,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.4276339050091,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 500,
+      "loss": 3.618048131465912,
+      "time_ms": 4038.714647293091,
+      "mfu": {
+        "mfu": 0.4638723339413784,
+        "mfu_percent": 46.38723339413784,
+        "flops_achieved": 144728168189710.06,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121702.08666003094,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.72816818971006,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 510,
+      "loss": 3.6535045504570007,
+      "time_ms": 4039.2966270446777,
+      "mfu": {
+        "mfu": 0.4638054994574072,
+        "mfu_percent": 46.38054994574072,
+        "flops_achieved": 144707315830711.03,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121684.55188685092,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.70731583071102,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 520,
+      "loss": 3.682337999343872,
+      "time_ms": 4040.670871734619,
+      "mfu": {
+        "mfu": 0.46364775776920053,
+        "mfu_percent": 46.364775776920055,
+        "flops_achieved": 144658100423990.56,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121643.16659352051,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.65810042399056,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 530,
+      "loss": 3.55473130941391,
+      "time_ms": 4035.5920791625977,
+      "mfu": {
+        "mfu": 0.4642312584655051,
+        "mfu_percent": 46.42312584655051,
+        "flops_achieved": 144840152641237.6,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121796.25451688182,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.84015264123758,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 540,
+      "loss": 3.666204810142517,
+      "time_ms": 4052.074193954468,
+      "mfu": {
+        "mfu": 0.4623429631071875,
+        "mfu_percent": 46.23429631071875,
+        "flops_achieved": 144251004489442.5,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121300.83914389528,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.2510044894425,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 550,
+      "loss": 3.576061427593231,
+      "time_ms": 4066.8342113494873,
+      "mfu": {
+        "mfu": 0.4606649526884489,
+        "mfu_percent": 46.06649526884489,
+        "flops_achieved": 143727465238796.06,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 120860.59437296318,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 143.72746523879607,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 560,
+      "loss": 3.55608731508255,
+      "time_ms": 4037.0075702667236,
+      "mfu": {
+        "mfu": 0.4640684856182469,
+        "mfu_percent": 46.40684856182469,
+        "flops_achieved": 144789367512893.03,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121753.54924279358,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.78936751289302,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 570,
+      "loss": 3.4906092286109924,
+      "time_ms": 4045.1643466949463,
+      "mfu": {
+        "mfu": 0.46313272564407815,
+        "mfu_percent": 46.31327256440782,
+        "flops_achieved": 144497410400952.38,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121508.04216436611,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.49741040095236,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 580,
+      "loss": 3.395322859287262,
+      "time_ms": 4116.727113723755,
+      "mfu": {
+        "mfu": 0.4550818982675934,
+        "mfu_percent": 45.508189826759335,
+        "flops_achieved": 141985552259489.12,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 119395.8177022327,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 141.9855522594891,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 590,
+      "loss": 3.5157999396324158,
+      "time_ms": 4050.478935241699,
+      "mfu": {
+        "mfu": 0.4625250543245413,
+        "mfu_percent": 46.25250543245413,
+        "flops_achieved": 144307816949256.88,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121348.6128080975,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.30781694925687,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 600,
+      "loss": 3.4074336290359497,
+      "time_ms": 4036.6861820220947,
+      "mfu": {
+        "mfu": 0.46410543328998927,
+        "mfu_percent": 46.410543328998926,
+        "flops_achieved": 144800895186476.66,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121763.24287705298,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.80089518647665,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 610,
+      "loss": 3.3791086077690125,
+      "time_ms": 4038.3708477020264,
+      "mfu": {
+        "mfu": 0.46391182489570865,
+        "mfu_percent": 46.391182489570866,
+        "flops_achieved": 144740489367461.1,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121712.44755287693,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.7404893674611,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 620,
+      "loss": 3.2949304580688477,
+      "time_ms": 4038.4199619293213,
+      "mfu": {
+        "mfu": 0.4639061829191367,
+        "mfu_percent": 46.39061829191367,
+        "flops_achieved": 144738729070770.66,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121710.9673173219,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.73872907077066,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 630,
+      "loss": 3.1727445125579834,
+      "time_ms": 4036.8902683258057,
+      "mfu": {
+        "mfu": 0.46408197028849146,
+        "mfu_percent": 46.408197028849145,
+        "flops_achieved": 144793574730009.34,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121757.0870966094,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.79357473000934,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 640,
+      "loss": 3.349185883998871,
+      "time_ms": 4049.8199462890625,
+      "mfu": {
+        "mfu": 0.46260031665846224,
+        "mfu_percent": 46.26003166584623,
+        "flops_achieved": 144331298797440.22,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121368.35872182179,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.3312987974402,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 650,
+      "loss": 3.258855640888214,
+      "time_ms": 4033.8900089263916,
+      "mfu": {
+        "mfu": 0.4644271374324581,
+        "mfu_percent": 46.44271374324581,
+        "flops_achieved": 144901266878926.94,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121847.6455511529,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.90126687892695,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 660,
+      "loss": 3.1532105803489685,
+      "time_ms": 4035.0377559661865,
+      "mfu": {
+        "mfu": 0.46429503337187017,
+        "mfu_percent": 46.429503337187015,
+        "flops_achieved": 144860050412023.5,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121812.98657571196,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.8600504120235,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 670,
+      "loss": 3.2375457882881165,
+      "time_ms": 4039.658546447754,
+      "mfu": {
+        "mfu": 0.4637639463886077,
+        "mfu_percent": 46.376394638860766,
+        "flops_achieved": 144694351273245.6,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121673.64997524723,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.6943512732456,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 680,
+      "loss": 3.069624900817871,
+      "time_ms": 4034.9252223968506,
+      "mfu": {
+        "mfu": 0.4643079825033784,
+        "mfu_percent": 46.43079825033784,
+        "flops_achieved": 144864090541054.06,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121816.38392496016,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.86409054105405,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 690,
+      "loss": 3.024480938911438,
+      "time_ms": 4051.2468814849854,
+      "mfu": {
+        "mfu": 0.4624373790017863,
+        "mfu_percent": 46.24373790017863,
+        "flops_achieved": 144280462248557.3,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121325.61020814245,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.2804622485573,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    },
+    {
+      "iter": 700,
+      "loss": 2.892608940601349,
+      "time_ms": 4036.3712310791016,
+      "mfu": {
+        "mfu": 0.46414164662010554,
+        "mfu_percent": 46.414164662010556,
+        "flops_achieved": 144812193745472.94,
+        "flops_per_token": 1189200384.0,
+        "tokens_per_sec": 121772.7438485867,
+        "hardware_peak_flops": 312000000000000.0,
+        "hardware_peak_tflops": 312.0,
+        "achieved_tflops": 144.81219374547294,
+        "gpu_name": "A100",
+        "precision": "bf16",
+        "num_gpus": 1.0,
+        "attention_flops_per_layer": 24159191040.0,
+        "ffn_flops_per_layer": 9663676416.0,
+        "attention_to_ffn_ratio": 2.5,
+        "architecture": "12L-12H-768D-AbsPos-LN-NB-GELU-PostNorm"
+      },
+      "memory": {
+        "allocated_gb": 2.015975936,
+        "reserved_gb": 15.632171008,
+        "max_allocated_gb": 12.596474368,
+        "max_reserved_gb": 15.632171008
+      }
+    }
+  ],
+  "eval_steps": [
+    {
+      "iter": 0,
+      "train_loss": 10.903554916381836,
+      "val_loss": 10.864729881286621,
+      "timestamp": "2025-11-04T04:25:27.510004",
+      "lr": 2.998500749625187e-07
+    }
+  ],
+  "checkpoints": [],
+  "metadata": {
+    "world_size": 1,
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "compile": false
+  }
+}
