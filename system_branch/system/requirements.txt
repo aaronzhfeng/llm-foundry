@@ -1,0 +1,40 @@
+# Enhanced GPT Training System - Requirements
+# ============================================
+
+# Core Dependencies
+torch>=2.0.0              # PyTorch 2.0+ required for torch.compile and SDPA
+numpy>=1.20.0
+tiktoken>=0.5.0          # BPE tokenizer
+
+# Optional but Recommended
+transformers>=4.30.0     # For loading pretrained GPT-2 weights
+wandb>=0.15.0           # For experiment tracking (optional)
+
+# For Data Processing
+datasets>=2.12.0        # Hugging Face datasets (optional)
+
+# Development Tools (Optional)
+pytest>=7.0.0           # For testing
+black>=23.0.0           # Code formatting
+flake8>=6.0.0          # Linting
+
+# Notes:
+# - PyTorch 2.0+ is required for:
+#   * torch.compile() (significant speedup)
+#   * scaled_dot_product_attention (FlashAttention)
+#   * FSDP improvements
+# 
+# - CUDA-enabled PyTorch recommended for training
+#   Install from: https://pytorch.org/get-started/locally/
+#
+# - For multi-GPU training:
+#   * NCCL backend (included with CUDA PyTorch)
+#   * InfiniBand recommended for multi-node
+#
+# - Optional: Triton for custom kernels (Linux + CUDA only)
+#   pip install triton
+#
+# - Optional: flash-attn package for FlashAttention-2
+#   pip install flash-attn --no-build-isolation
+#   (Requires CUDA, may need build tools)
+

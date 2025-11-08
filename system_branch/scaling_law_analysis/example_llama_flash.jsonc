@@ -1,0 +1,24 @@
+{
+  // ============================================================================
+  // Example LLaMA Config with Flash Attention ENABLED
+  // ============================================================================
+  // This demonstrates memory savings with Flash Attention
+  
+  "hidden_size": 4096,
+  "intermediate_size": 11008,
+  "num_hidden_layers": 32,
+  "num_attention_heads": 32,
+  "vocab_size": 32000,
+  "max_position_embeddings": 2048,
+  "tie_word_embeddings": false,
+  
+  // ✅ Flash Attention ENABLED
+  // Saves O(S²) memory by not storing full attention matrix
+  // For S=2048: ~10-16 GB memory savings for 32-layer model
+  // FLOPs: NO CHANGE (Flash Attention only optimizes memory)
+  "use_flash_attention": true,
+  
+  "model_type": "llama",
+  "architectures": ["LlamaForCausalLM"]
+}
+

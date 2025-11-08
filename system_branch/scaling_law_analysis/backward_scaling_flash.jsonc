@@ -1,9 +1,8 @@
 {
   // ============================================================================
-  // Backward Scaling Law - Auto-Detection Example
+  // Backward Scaling with Flash Attention Example
   // ============================================================================
-  // This example shows AUTO-DETECTION of peak_flops_per_gpu
-  // System automatically determines GPU specs from gpu_type and dtype
+  // This example shows memory savings with Flash Attention enabled
   
   "architecture": {
     "hidden_size": 4096,
@@ -16,21 +15,22 @@
   },
   
   "training_gear": {
-    // Only specify gpu_type and dtype
-    // System AUTO-DETECTS peak FLOPs!
-    "gpu_type": "H100",        // Will detect: 989 TFLOPS (BF16)
+    "gpu_type": "H100",
     "num_gpus": 8,
     "available_hours": 720,
     "dtype": "bfloat16"
-    // ✅ peak_flops_per_gpu NOT specified - will auto-detect!
   },
   
   "training_efficiency": {
     "expected_mfu": 0.45,
     "batch_size": 1,
     "gradient_accumulation_steps": 1,
-    // Flash Attention: Saves O(S²) memory, no FLOPs change
-    "use_flash_attention": false
+    
+    // ✅ Flash Attention ENABLED
+    // Saves: batch_size × num_heads × seq² × 2 bytes per layer
+    // For batch=1, heads=32, seq=2048: ~0.5 GB per layer
+    // Total savings: ~16 GB for 32-layer model
+    "use_flash_attention": true
   },
   
   "dataset_constraints": {

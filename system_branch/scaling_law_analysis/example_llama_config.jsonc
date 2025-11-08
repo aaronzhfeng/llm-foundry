@@ -1,0 +1,144 @@
+{
+  // ============================================================================
+  // Example Model Architecture Configuration (LLaMA-style)
+  // ============================================================================
+  // This config defines the model architecture for forward analysis
+  // (calculating N, FLOPs, memory from architecture)
+  
+  // ============================================================================
+  // REQUIRED PARAMETERS
+  // ============================================================================
+  
+  // Hidden dimension (embedding size)
+  // Must be divisible by num_attention_heads
+  // Typical values: 768, 1024, 2048, 3072, 4096, 5120, 7168, 8192
+  "hidden_size": 4096,
+  
+  // FFN intermediate dimension (feed-forward network)
+  // For SwiGLU activation: usually 4×hidden_size or 3.5×hidden_size
+  // For GELU: usually 4×hidden_size
+  // Common ratios: 2.5, 3.5, 4.0, 5.3
+  "intermediate_size": 11008,  // ~2.69× hidden_size (LLaMA style)
+  
+  // Number of transformer layers (depth)
+  // More layers = deeper model
+  // Typical values: 12, 16, 24, 32, 40, 48, 64, 80
+  "num_hidden_layers": 32,
+  
+  // Number of attention heads
+  // Must divide hidden_size evenly
+  // head_dim = hidden_size / num_attention_heads
+  // Recommended head_dim: 64-128
+  // Typical values: 8, 12, 16, 20, 24, 28, 32, 40, 64
+  "num_attention_heads": 32,  // head_dim = 4096/32 = 128
+  
+  // Vocabulary size
+  // Number of tokens in the tokenizer
+  // Larger vocab = better multilingual support, more parameters
+  // Common values:
+  //   - 32000: LLaMA (BPE)
+  //   - 50257: GPT-2/3
+  //   - 50000: Round number, good default
+  //   - 100000: Large multilingual
+  //   - 128000: Very large (GPT-4 class)
+  "vocab_size": 32000,
+  
+  // ============================================================================
+  // OPTIONAL PARAMETERS (with defaults)
+  // ============================================================================
+  
+  // Maximum sequence length (positional embeddings)
+  // DEFAULT: 2048 if not specified
+  // Common values: 512, 1024, 2048, 4096, 8192, 16384, 32768, 131072
+  // Longer sequences = more memory, quadratic attention cost
+  "max_position_embeddings": 2048,
+  
+  // Number of key-value heads (for Grouped Query Attention)
+  // DEFAULT: Same as num_attention_heads (standard Multi-Head Attention)
+  // For GQA: Use fewer KV heads than Q heads
+  // Examples:
+  //   - Same as num_attention_heads: Multi-Head Attention (MHA)
+  //   - 8 (while num_attention_heads=32): Grouped Query Attention (GQA)
+  //   - 1: Multi-Query Attention (MQA)
+  // "num_key_value_heads": 32,  // Uncomment for GQA
+  
+  // Tie input and output embeddings (weight sharing)
+  // DEFAULT: false
+  // If true: Input and output embedding matrices share weights
+  // Saves: vocab_size × hidden_size parameters (~131M for this config)
+  // LLaMA: false (untied), GPT-2: true (tied)
+  "tie_word_embeddings": false,
+  
+  // Maximum sequence length (alternative name)
+  // DEFAULT: Uses max_position_embeddings if not specified
+  // Some configs use this instead of max_position_embeddings
+  // "max_sequence_length": 2048,  // Uncomment if needed
+  
+  // ============================================================================
+  // METADATA (optional, not used in calculations)
+  // ============================================================================
+  
+  // Model identifier (for reference)
+  // DEFAULT: Not used in calculations
+  "model_type": "llama",
+  
+  // Model name or path (for reference)
+  // DEFAULT: Not used in calculations
+  "_name_or_path": "llama-7b-style",
+  
+  // Architecture list (for HuggingFace compatibility)
+  // DEFAULT: Not used in calculations
+  "architectures": [
+    "LlamaForCausalLM"
+  ],
+  
+  // Activation function (informational)
+  // DEFAULT: Assumed to be SwiGLU for LLaMA-style models
+  // Common: "silu" (SwiGLU), "gelu", "relu"
+  "hidden_act": "silu",
+  
+  // RMSNorm epsilon (for numerical stability)
+  // DEFAULT: 1e-6 if not specified
+  // Typical: 1e-5, 1e-6
+  "rms_norm_eps": 1e-06,
+  
+  // Initializer range (for weight initialization)
+  // DEFAULT: Not used in FLOPs/parameter calculations
+  "initializer_range": 0.02,
+  
+  // Special token IDs (for generation/training)
+  // DEFAULT: Not used in FLOPs/parameter calculations
+  "bos_token_id": 1,    // Beginning of sequence
+  "eos_token_id": 2,    // End of sequence  
+  "pad_token_id": 0,    // Padding token
+  
+  // Use cache (for inference)
+  // DEFAULT: Not used in FLOPs/parameter calculations
+  "use_cache": true,
+  
+  // Torch dtype (informational)
+  // DEFAULT: Assumed to be float16/bfloat16 for memory calculations
+  "torch_dtype": "float16",
+  
+  // Transformers version (for compatibility)
+  // DEFAULT: Not used in calculations
+  "transformers_version": "4.28.0.dev0"
+  
+  // ============================================================================
+  // SUMMARY
+  // ============================================================================
+  // REQUIRED: hidden_size, intermediate_size, num_hidden_layers,
+  //           num_attention_heads, vocab_size
+  //
+  // OPTIONAL WITH DEFAULTS:
+  //   - max_position_embeddings: 2048
+  //   - num_key_value_heads: same as num_attention_heads (MHA)
+  //   - tie_word_embeddings: false
+  //   - rms_norm_eps: 1e-6
+  //
+  // INFORMATIONAL (not used in calculations):
+  //   - model_type, architectures, hidden_act, initializer_range,
+  //     bos/eos/pad_token_id, use_cache, torch_dtype, transformers_version
+  // ============================================================================
+}
+

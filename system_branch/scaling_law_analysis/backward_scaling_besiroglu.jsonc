@@ -1,0 +1,92 @@
+{
+  // ============================================================================
+  // Backward Scaling Law Configuration - Besiroglu et al. (2024) Variant
+  // ============================================================================
+  // This config uses the Epoch AI re-analysis of Chinchilla scaling laws
+  // Updated coefficients from 2024 reanalysis with different optimizer
+  
+  "architecture": {
+    "hidden_size": 4096,
+    "intermediate_size": 11008,
+    "num_hidden_layers": 32,
+    "num_attention_heads": 32,
+    "vocab_size": 50000,
+    "max_position_embeddings": 2048,
+    "tie_word_embeddings": false
+  },
+  
+  "training_gear": {
+    "gpu_type": "H100",
+    "num_gpus": 8,
+    "available_hours": 720,
+    "peak_flops_per_gpu": 989e12,
+    "dtype": "bfloat16"
+  },
+  
+  "training_efficiency": {
+    "expected_mfu": 0.45,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 1
+  },
+  
+  "dataset_constraints": {
+    "dataset_size": 1e12,
+    "max_epochs": 100,
+    "sequence_length": 2048
+  },
+  
+  "scaling_law": {
+    // ========================================================================
+    // Besiroglu et al. (2024) - Epoch AI Re-analysis
+    // ========================================================================
+    // Updated fit from re-analyzing Hoffmann et al. data
+    // Shows sensitivity to fitting procedure and optimizer choice
+    //
+    // Key differences from Hoffmann (2022):
+    // - Larger coefficients (A, B)
+    // - Slightly different exponents (α, β)
+    // - Higher irreducible loss (E)
+    // - May be more sensitive to specific training conditions
+    //
+    // Reference: https://epochai.org/blog/scaling-laws
+    // ========================================================================
+    
+    "base": "besiroglu_2024",
+    
+    // Irreducible loss (minimum achievable)
+    // Hoffmann: 1.69
+    // Besiroglu: 1.8172 (18% higher)
+    "E": 1.8172,
+    
+    // Parameter scaling coefficient
+    // Hoffmann: 406.4
+    // Besiroglu: 482.01 (19% higher)
+    "A": 482.01,
+    
+    // Data scaling coefficient
+    // Hoffmann: 410.7
+    // Besiroglu: 2085.43 (408% higher!)
+    "B": 2085.43,
+    
+    // Parameter scaling exponent
+    // Hoffmann: 0.34
+    // Besiroglu: 0.3478 (2% higher)
+    "alpha": 0.3478,
+    
+    // Data scaling exponent
+    // Hoffmann: 0.28
+    // Besiroglu: 0.3658 (31% higher!)
+    "beta": 0.3658
+    
+    // Interpretation:
+    // - Higher E: Suggests harder task or different dataset
+    // - Higher B and β: Data scaling has stronger effect
+    // - Result: May recommend different N/D allocation than Hoffmann
+  },
+  
+  "output_options": {
+    "show_breakdown": true,
+    "verify_calculations": true
+  }
+}
+
