@@ -368,7 +368,7 @@ def calculate_llama_flops(config, sequence_length=2048):
     D_ff = config['intermediate_size']
     L = config['num_hidden_layers']
     S = sequence_length
-    B = batch_size
+    B = 1  
     a = config['num_attention_heads']
 
     # Forward pass FLOPs per layer
