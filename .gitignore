@@ -205,3 +205,24 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Large binary files (prevent future accidents)
+*.hdf5
+*.h5
+*.bin
+*.pkl
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# System files
+.DS_Store
+
+# Training outputs
+out-*/
+
+# Dataset files
+data/*/train.bin
+data/*/val.bin
+data/*/meta.pkl
