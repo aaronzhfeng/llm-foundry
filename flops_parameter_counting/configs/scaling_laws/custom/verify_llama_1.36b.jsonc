@@ -1,0 +1,69 @@
+{
+  // ============================================================================
+  // Verification Config for LLaMA 1.36B
+  // ============================================================================
+  // This config verifies the N-D pair from llama_1.36e21_32kV.json
+  // Expected: N = 1.294e9, D = 8.472e10, Loss = 2.372
+  
+  "architecture": {
+    // Model dimensions from enhanced_training_system/info/llama_1.36e21_32kV.json
+    "hidden_size": 2304,
+    "intermediate_size": 6144,
+    "num_hidden_layers": 18,
+    "num_attention_heads": 18,
+    "vocab_size": 32000,
+    "max_position_embeddings": 2048,
+    "tie_word_embeddings": false
+  },
+  
+  "training_gear": {
+    // Example setup that produces C ≈ 1.36e21 FLOPs
+    // Adjust these values to match your actual training infrastructure
+    
+    "num_gpus": 4,
+    "gpu_type": "A100",  // Options: B200, H200, H100, A100, V100
+    "available_hours": 720,  // 30 days = 720 hours
+    "dtype": "bfloat16"  // Options: fp8, bfloat16, float16
+    
+    // Auto-calculated from gpu_type and dtype:
+    // - A100 bfloat16: 312 TFLOPS peak per GPU
+    // - Total: 4 GPUs × 312 TF × 720h × 3600s = 3.23e21 peak FLOPs
+  },
+  
+  "training_efficiency": {
+    "expected_mfu": 0.40,  // 40% Model FLOPs Utilization
+    // Realistic range: 35-45% for well-optimized training
+    // Your actual: check training logs for measured MFU
+    
+    "uptime": 0.95  // 95% uptime (accounting for crashes, maintenance)
+    
+    // Effective compute: 3.23e21 × 0.40 × 0.95 = 1.23e21 FLOPs
+    // Close to your 1.36e21 target
+  },
+  
+  "dataset_constraints": {
+    // Dataset and sequence constraints
+    "dataset_size": 627e9,  // SlimPajama-627B total tokens
+    "max_epochs": 1,  // Single pass through data
+    "sequence_length": 2048  // Context window (must match architecture)
+  },
+  
+  "scaling_law": {
+    // Chinchilla scaling law (Hoffmann et al., 2022)
+    // Formula: L(N, D) = E + A·N^(-α) + B·D^(-β)
+    
+    "base": "hoffmann_2022",  // Which scaling law to use
+    "E": 1.69,      // Irreducible loss
+    "A": 406.4,     // Parameter scaling coefficient
+    "B": 410.7,     // Data scaling coefficient
+    "alpha": 0.34,  // Parameter scaling exponent
+    "beta": 0.28    // Data scaling exponent
+  },
+  
+  "output_options": {
+    "show_breakdown": true,
+    "verify_calculations": true
+  }
+}
+
+

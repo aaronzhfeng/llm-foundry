@@ -1,0 +1,17 @@
+{
+  "_name_or_path": "enhanced_training_system/gpt2_1.36b",
+  "architectures": [
+    "GPT2LMHeadModel"
+  ],
+  "hidden_size": 2432,
+  "intermediate_size": 9728,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt2",
+  "num_attention_heads": 18,
+  "num_hidden_layers": 18,
+  "vocab_size": 50304,
+  "tie_word_embeddings": true,
+  "torch_dtype": "bfloat16",
+  "use_cache": true
+}
+

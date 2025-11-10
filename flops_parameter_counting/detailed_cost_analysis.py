@@ -1508,33 +1508,128 @@ def validate_calculations():
     print("=" * 80)
 
 
+def resolve_config_path(config_path, config_type='model'):
+    """
+    Resolve config path with support for new organized directory structure.
+    
+    Args:
+        config_path: User-provided config path (can be relative or absolute)
+        config_type: 'model' for forward analysis, 'scaling_law' for backward analysis
+    
+    Returns:
+        Resolved absolute path to config file
+    
+    Search Order:
+    1. Exact path as provided (if exists)
+    2. configs/models/ for model configs
+    3. configs/scaling_laws/*/ for scaling law configs
+    4. Current directory (backward compatibility)
+    """
+    import os
+    from pathlib import Path
+    
+    # If absolute path or exists as-is, use it
+    if os.path.isabs(config_path) or os.path.exists(config_path):
+        return config_path
+    
+    # Get script directory
+    script_dir = Path(__file__).parent
+    
+    # Try new organized structure first
+    if config_type == 'model':
+        # Try configs/models/
+        new_path = script_dir / 'configs' / 'models' / config_path
+        if new_path.exists():
+            return str(new_path)
+    
+    elif config_type == 'scaling_law':
+        # Try configs/scaling_laws/ and subdirectories
+        search_dirs = [
+            script_dir / 'configs' / 'scaling_laws',
+            script_dir / 'configs' / 'scaling_laws' / 'hoffmann',
+            script_dir / 'configs' / 'scaling_laws' / 'besiroglu',
+            script_dir / 'configs' / 'scaling_laws' / 'custom',
+        ]
+        
+        for search_dir in search_dirs:
+            new_path = search_dir / config_path
+            if new_path.exists():
+                return str(new_path)
+    
+    # Backward compatibility: try current directory
+    return config_path
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Detailed LLM Training Cost Analysis')
-    parser.add_argument('--model_config', type=str, help='Path to model architecture config file')
-    parser.add_argument('--backward_config', type=str, help='Path to backward scaling config file')
-    parser.add_argument('--validate', action='store_true', help='Run validation tests')
+    parser = argparse.ArgumentParser(
+        description='Detailed LLM Training Cost Analysis',
+        epilog="""
+Examples:
+  # Forward analysis (calculate N from architecture)
+  python detailed_cost_analysis.py --model_config llama_1.36b.json
+  python detailed_cost_analysis.py --model_config configs/models/gpt2_1.36b.json
+  
+  # Backward analysis (calculate N and D from compute budget)
+  python detailed_cost_analysis.py --backward_config verify_llama_1.36b.jsonc
+  python detailed_cost_analysis.py --backward_config configs/scaling_laws/hoffmann/backward_scaling_config.jsonc
+  
+  # Validation
+  python detailed_cost_analysis.py --validate
+
+Note: Configs can be specified with just filename if in configs/models/ or configs/scaling_laws/
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument('--model_config', type=str, 
+                        help='Path to model architecture config file (for forward analysis)')
+    parser.add_argument('--backward_config', type=str, 
+                        help='Path to backward scaling config file (for backward analysis)')
+    parser.add_argument('--validate', action='store_true', 
+                        help='Run validation tests')
     args = parser.parse_args()
 
     if args.validate:
         validate_calculations()
 
     if args.backward_config:
-        results = backward_scaling_from_config(args.backward_config)
+        # Resolve path for backward config
+        resolved_path = resolve_config_path(args.backward_config, config_type='scaling_law')
+        print(f"Using config: {resolved_path}\n")
+        results = backward_scaling_from_config(resolved_path)
 
     elif args.model_config:
+        # Resolve path for model config
+        resolved_path = resolve_config_path(args.model_config, config_type='model')
+        print(f"Using config: {resolved_path}\n")
+        args.model_config = resolved_path  # Update for downstream use
+        
+        # Determine model type
         if 'deepseek' in args.model_config.lower():
             num_parameters, num_flops, memory_cost, enhanced_metrics = model_training_cost_analysis_deepseek(args.model_config)
             print("\n" + "=" * 80)
             print("DeepSeek V3 Model Analysis (Detailed Academic Formulas)")
             print("=" * 80)
-        elif 'llama' in args.model_config.lower():
+        elif 'llama' in args.model_config.lower() or 'gpt' in args.model_config.lower():
+            # Both LLaMA and GPT-2 use standard transformer calculation
             num_parameters, num_flops, memory_cost, enhanced_metrics = model_training_cost_analysis_llama(args.model_config)
+            
+            # Determine display name from config
+            if 'gpt' in args.model_config.lower():
+                model_name = "GPT-2/GPT-3"
+            else:
+                model_name = "LLaMA"
+            
             print("\n" + "=" * 80)
-            print("LLaMA Model Analysis (Detailed Academic Formulas)")
+            print(f"{model_name} Model Analysis (Detailed Academic Formulas)")
             print("=" * 80)
         else:
-            print('Unknown LLM Type!')
-            exit()
+            # Default to standard transformer (LLaMA-style calculation)
+            print("⚠️  Warning: Model type not explicitly recognized.")
+            print("    Assuming standard transformer (LLaMA-style calculation).\n")
+            num_parameters, num_flops, memory_cost, enhanced_metrics = model_training_cost_analysis_llama(args.model_config)
+            print("\n" + "=" * 80)
+            print("Standard Transformer Model Analysis (Detailed Academic Formulas)")
+            print("=" * 80)
 
         # Basic metrics
         print(f"Total Parameters:        {num_parameters:,.0f} ({num_parameters/1e9:.2f}B)")
