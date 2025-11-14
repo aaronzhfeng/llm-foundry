@@ -10,38 +10,38 @@ Architecture (GPT-2-style):
 - Post-norm
 - Weight tying
 
-Model Dimensions (Option A: Match Depth):
+Model Dimensions:
 - 18 layers (SAME as LLaMA 1.36B)
-- 2432 hidden dim (slightly wider than LLaMA's 2304)
-- 18 heads → 135 head_dim
+- 2304 hidden dim (SAME as LLaMA's 2304)
+- 18 heads → 128 head_dim
 - 2048 context (SAME as LLaMA)
 - 50304 vocab (GPT-2 standard)
 
-Parameters: ~1.37B (matches LLaMA 1.36B)
+Parameters: ~1.29B (slightly less than LLaMA 1.36B due to weight tying)
 
 Design Rationale:
-- Matching layer count (18) allows fair comparison of depth
-- Slightly wider (2432 vs 2304) compensates for simpler FFN
-- Weight tying saves ~122M params → allows wider hidden dimension
-- Same head count for fair attention comparison
+- Matching layer count (18) and hidden dim (2304) for fair comparison
+- Same head count (18) and head dim (128) for fair attention comparison
+- Weight tying reduces params slightly (vs LLaMA's no weight tying)
+- Standard FFN (4×) vs LLaMA's SwiGLU (2.67×) is the key difference
 
 Key Differences from LLaMA 1.36B:
 ┌─────────────────────┬───────────────┬───────────────┬────────────┐
-│ Feature             │ GPT-2 1.36B   │ LLaMA 1.36B   │ Impact     │
+│ Feature             │ GPT-2 1.29B   │ LLaMA 1.36B   │ Impact     │
 ├─────────────────────┼───────────────┼───────────────┼────────────┤
 │ Layers              │ 18            │ 18            │ ✓ Same     │
-│ Hidden Size         │ 2432          │ 2304          │ +5.6%      │
+│ Hidden Size         │ 2304          │ 2304          │ ✓ Same     │
 │ Heads               │ 18            │ 18            │ ✓ Same     │
-│ Head Dim            │ 135           │ 128           │ +5.5%      │
+│ Head Dim            │ 128           │ 128           │ ✓ Same     │
 │ Context             │ 2048          │ 2048          │ ✓ Same     │
 │ FFN Type            │ Standard 4×   │ SwiGLU 2.67×  │ Different  │
-│ FFN Size            │ 9728          │ 6144          │ +58%       │
+│ FFN Size            │ 9216          │ 6144          │ +50%       │
 │ Position            │ Learned       │ RoPE          │ Different  │
 │ Norm                │ LayerNorm     │ RMSNorm       │ Different  │
 │ Norm Position       │ Post          │ Pre           │ Different  │
 │ Weight Tying        │ Yes           │ No            │ Different  │
 │ Vocab Size          │ 50304         │ 32000         │ +57%       │
-│ Total Params        │ ~1.37B        │ ~1.36B        │ ✓ Match    │
+│ Total Params        │ ~1.29B        │ ~1.36B        │ Similar    │
 └─────────────────────┴───────────────┴───────────────┴────────────┘
 
 Usage:
@@ -66,14 +66,18 @@ arch_preset = 'gpt2'  # Use GPT-2 components: LayerNorm + Learned Pos + GELU + S
 # === Model Dimensions ===
 n_layer = 18                # Number of transformer layers (SAME as LLaMA)
 n_head = 18                 # Number of attention heads (SAME as LLaMA)
-n_embd = 2432               # Hidden dimension (slightly wider than LLaMA's 2304)
+n_embd = 2304               # Hidden dimension (SAME as LLaMA's 2304, head_dim=128)
 block_size = 2048           # Maximum sequence length (SAME as LLaMA)
 dropout = 0.0               # Dropout rate (no dropout for fair comparison)
 bias = False                # No bias in linear layers
 
+# === Derived Parameters (must be set to None or correct values when overriding preset) ===
+num_key_value_heads = None  # Will auto-set to n_head (18) for MHA
+d_ff = None                 # Will auto-calculate as 4×n_embd = 9216
+
 # === Derived Parameters (auto-calculated by model) ===
-# intermediate_size = 9728          # FFN dimension (4× 2432 for GPT-2)
-# head_dim = 135                    # Per-head dimension (2432 / 18 ≈ 135)
+# intermediate_size = 9216          # FFN dimension (4× 2304 for GPT-2)
+# head_dim = 128                    # Per-head dimension (2304 / 18 = 128)
 # vocab_size = 50304                # Will be set from tokenizer (GPT-2 standard)
 
 # === Architecture Components (specified by arch_preset='gpt2') ===
@@ -147,15 +151,16 @@ use_fsdp = False                   # Fully Sharded Data Parallel
 out_dir = 'out-gpt2-1.36b'         # Output directory for checkpoints
 eval_interval = 1000               # Evaluate every N iterations
 log_interval = 10                  # Log every N iterations
-eval_iters = 200                   # Number of iterations for evaluation
+eval_iters = 50                    # Number of iterations for evaluation (reduced for speed)
 eval_only = False                  # If True, run evaluation and exit
+eval_at_start = False              # If True, run evaluation before first training iteration
 always_save_checkpoint = True      # Save checkpoint after each eval
 init_from = 'scratch'              # 'scratch', 'resume', or 'gpt2*'
 
 # === Logging ===
 save_log_to_json = True            # Save training logs to JSON
-log_save_interval = 100            # Save log every N iterations
-gradient_log_interval = 50         # Log gradient stats every N iterations
+log_save_interval = 10             # Save log every N iterations (increased frequency)
+gradient_log_interval = 10         # Log gradient stats every N iterations
 
 # === Weights & Biases (optional) ===
 wandb_log = False                  # Enable W&B logging
@@ -170,32 +175,31 @@ wandb_run_name = 'run-1'           # W&B run name
 #
 # Where:
 # - V = vocab_size = 50304
-# - H = hidden_size = 2432
+# - H = hidden_size = 2304
 # - S = max_position_embeddings = 2048
 # - L = num_layers = 18
 # - Weight tying = True (input & output embeddings share parameters)
 #
 # Breakdown:
-# 1. Token embeddings: V×H = 50304×2432 = 122,339,328 (shared with output)
-# 2. Position embeddings: S×H = 2048×2432 = 4,980,736
+# 1. Token embeddings: V×H = 50304×2304 = 115,900,416 (shared with output)
+# 2. Position embeddings: S×H = 2048×2304 = 4,718,592
 # 3. Per layer (18 layers):
-#    - Attention (Q,K,V,O): 4×H² = 4×2432² = 23,674,880
-#    - FFN (up, down): 2×H×(4H) = 2×2432×9728 = 47,349,760
-#    - LayerNorm: 2×H = 2×2432 = 4,864 (negligible)
-#    - Layer total: 71,029,504
-#    - All layers: 18×71,029,504 = 1,278,531,072
-# 4. Final LayerNorm: H = 2,432
+#    - Attention (Q,K,V,O): 4×H² = 4×2304² = 21,233,664
+#    - FFN (up, down): 2×H×(4H) = 2×2304×9216 = 42,467,328
+#    - LayerNorm: 2×H = 2×2304 = 4,608 (negligible)
+#    - Layer total: 63,705,600
+#    - All layers: 18×63,705,600 = 1,146,700,800
+# 4. Final LayerNorm: H = 2,304
 #
-# Total: 122,339,328 + 4,980,736 + 1,278,531,072 + 2,432
-#      = 1,405,853,568 ≈ 1.41B parameters
+# Total: 115,900,416 + 4,718,592 + 1,146,700,800 + 2,304
+#      = 1,267,322,112 ≈ 1.27B parameters
 #
-# Note: Slightly higher than 1.36B due to:
-# - Wider hidden dim (2432 vs 2304)
-# - Position embeddings (LLaMA uses RoPE with no params)
-# - Larger vocab (50304 vs 32000)
-#
-# To exactly match 1.36B, would need hidden_size ≈ 2368
-# But 2432 = 18×135.1 gives cleaner head_dim
+# Note: Slightly less than LLaMA 1.36B due to:
+# - Weight tying (saves ~116M params vs LLaMA's no tying)
+# - Position embeddings add ~4.7M (LLaMA uses RoPE with no params)
+# - Larger vocab (50304 vs 32000) adds ~50M params
+# 
+# Net effect: Weight tying savings exceed vocab increase, resulting in ~1.29B total
 
 # =============================================================================
 # EXPECTED PERFORMANCE

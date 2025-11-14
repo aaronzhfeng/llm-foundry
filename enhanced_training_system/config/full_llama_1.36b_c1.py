@@ -1,29 +1,28 @@
 """
-LLaMA 1.36B Architecture - Production Configuration
-===================================================
+LLaMA 1.36B Architecture - C-1 Variant (Deeper, Narrower)
+===========================================================
 
-Based on scaling law optimization from: info/llama_1.36e21_32kV.json
+Alternative design optimized for modern hardware and Chinchilla scaling.
 
 Model Design:
-- Parameters: 1.294B (1,294,159,104 exactly)
-- Config: 18L-18H-2304D-6144ff (from llama_1.36e21_32kV.json)
-- FFN ratio: 8/3 × d_model (classic LLaMA)
-- Optimal training: 84.72B tokens (from scaling law analysis)
-- Target loss: 2.37 (theoretical minimum)
+- Parameters: 1.364B (24L-16H-2048D-5632ff)
+- Design: C-1 (deeper, narrower) - kernel-friendly with Q=128
+- Optimal training: ~27B tokens (D ≈ 20N per Chinchilla)
+- Target loss: ~2.4-2.5 (with optimal data)
 
 Architecture (LLaMA-style):
 - RoPE (Rotary Position Embeddings)
 - RMSNorm (faster than LayerNorm)
-- SwiGLU activation (d_ff = 8/3 × d_model = 6144)
+- SwiGLU activation (d_ff = 2.75 × d_model)
 - Pre-norm (better training stability)
 - No weight tying
 - No bias
 - Head dimension: 128 (FlashAttention optimal)
 
-Alternative Kernel-Optimized Designs:
-- See config/full_llama_1.36b_c1.py: 24L-16H-2048D-5632ff = 1.364B (deeper, narrower)
-- See config/full_llama_1.36b_c2.py: 19L-18H-2304D-6144ff = 1.358B (one extra layer)
-- See config/full_llama_1.36b_c3.py: 18L-18H-2304D-6656ff = 1.358B (wider FFN)
+Alternative Designs (all ~1.36B):
+- C-1 (current): 24L-16H-2048D-5632ff = 1.364B (deeper, narrower)
+- C-2 (minimal change): 19L-18H-2304D-6144ff = 1.358B (classic 8/3 FFN ratio)
+- C-3 (single param): 18L-18H-2304D-6656ff = 1.358B (wider FFN only)
 
 Usage:
     # Quick test on 6B tokens
@@ -49,23 +48,27 @@ arch_preset = 'llama'  # Use LLaMA components: RoPE + RMSNorm + SwiGLU + Pre-nor
 # === Attention Backend Override ===
 attention_backend = 'flash_attn_2'  # Use FlashAttention-2 (fastest, ~2x speedup)
 
-# === Model Dimensions (From JSON: llama_1.36e21_32kV.json) ===
-n_layer = 18                # Number of transformer layers
-n_head = 18                 # Number of attention heads
-n_embd = 2304               # Hidden dimension / embedding dimension
+# === Model Dimensions (C-1: Deeper, Narrower - Recommended) ===
+n_layer = 24                # Number of transformer layers (deeper than original)
+n_head = 16                 # Number of attention heads
+n_embd = 2048               # Hidden dimension / embedding dimension
 block_size = 2048           # Maximum sequence length / context window
 dropout = 0.0               # Dropout rate (LLaMA uses 0.0)
 bias = False                # No bias in linear layers (LLaMA standard)
 
 # === FFN Dimension (SwiGLU) ===
-# From JSON: intermediate_size = 6144
-# Classic LLaMA ratio: 8/3 × d_model = 6144
-d_ff = 6144                 # FFN dimension (24×256, from scaling law optimization)
-intermediate_size = 6144    # Alias for compatibility
+# For SwiGLU, d_ff is explicitly set (not auto-calculated)
+# Standard LLaMA uses ~8/3 × d_model, here using ~2.75x for kernel alignment
+d_ff = 5632                 # FFN dimension (22×256, kernel-friendly)
+intermediate_size = 5632    # Alias for compatibility
 
 # === Derived Parameters ===
-# head_dim = 128                    # Per-head dimension (2304 / 18) - FlashAttention optimal
+# head_dim = 128                    # Per-head dimension (2048 / 16) - FlashAttention optimal
 # vocab_size = 32000                # Will be set from tokenizer metadata
+
+# === Alternative Designs (all ~1.36B params) ===
+# C-2 (minimal change from old): n_layer=19, n_head=18, n_embd=2304, d_ff=6144
+# C-3 (single param change): n_layer=18, n_head=18, n_embd=2304, d_ff=6656
 
 # === Architecture Components (specified by arch_preset='llama') ===
 # normalization = 'rmsnorm'         # RMSNorm (faster than LayerNorm)
@@ -87,7 +90,7 @@ dataset = 'slimpajama_6b_llama'    # Dataset name (data/slimpajama_6b_llama/)
                                     # Change to 'slimpajama_627b_llama' for production
 gradient_accumulation_steps = 16   # Accumulate gradients over N steps
 batch_size = 8                     # Micro-batch size per GPU
-                                    # Note: For 1.29B model, batch_size=6-8 works on 2× A6000
+                                    # Note: For 1.36B model on single A6000, use batch_size=4
 
 # Effective batch size = batch_size × gradient_accumulation_steps × num_gpus
 # Example (4x A100): 8 × 16 × 4 = 512 samples/iter = 1,048,576 tokens/iter
@@ -160,41 +163,42 @@ wandb_project = 'llama-1.36b'      # W&B project name
 wandb_run_name = 'run-1'           # W&B run name
 
 # =============================================================================
-# METADATA (From scaling law analysis: llama_1.36e21_32kV.json)
+# METADATA (Compute-optimal design)
 # =============================================================================
 
-# Model: 18L-18H-2304D-6144ff = 1.294B params
+# Model: 24L-16H-2048D-5632ff = 1.364B params
 # Architecture: LLaMA-style (RoPE + RMSNorm + SwiGLU + Pre-norm)
 # Head dimension: 128 (FlashAttention optimal)
 #
-# Scaling Law Results:
-# - Theoretical loss: 2.372087
-# - Optimal configuration: 1.294B params × 84.72B tokens
-# - Validation (62M tokens): loss = 4.712
-# - Per-token FLOPs (PaLM): 6N + 12LHQT = 9.18 GF/token
+# Chinchilla Scaling Law:
+# - Optimal training: D ≈ 20N = 27B tokens
+# - Per-token FLOPs (PaLM): 6N + 12LHQT = 8.61 GF/token
+# - Target loss: ~2.4-2.5 (with optimal data)
 #
 # Training Recommendations:
-# 1. For optimal (~85B tokens): ~324k iterations @ 262k tokens/iter
-# 2. For quick testing (6B tokens): ~23k iterations
+# 1. For Chinchilla optimal (~27B tokens): ~103k iterations @ 262k tokens/iter
+# 2. For quick testing (6B tokens): ~23k iterations (6-8 hours on 2× A6000)
 # 3. For validation: slimpajama_6b (6B tokens) → expect loss ~4.0-4.5
 #
 # Expected Performance (2× A6000, ZeRO-1):
-# - Tokens/sec: ~16,000-18,000
-# - MFU: 42-50% (with FlashAttention-2 and PaLM formula)
-# - Memory/GPU: ~38-42 GB (batch_size=6 works, 8 is tight)
-# - Time to 85B tokens: ~1,500 hours (~62 days)
+# - Tokens/sec: ~15,000-18,000
+# - MFU: 40-50% (with FlashAttention-2 and PaLM formula)
+# - Memory/GPU: ~40-45 GB (requires batch_size=4-6)
+# - Time to 27B tokens: ~420-500 hours (~17-21 days)
+#
+# Note: 1.36B model requires lower batch_size than 784M model due to increased depth
 #
 # Expected Performance (4× A100, DDP):
-# - Tokens/sec: ~55,000-65,000
-# - MFU: 42-52%
+# - Tokens/sec: ~50,000-60,000
+# - MFU: 40-48%
 # - Memory/GPU: ~25-30 GB
-# - Time to 85B tokens: ~370-450 hours (~15-19 days)
+# - Time to 27B tokens: ~125-150 hours (~5-6 days)
 #
 # Expected Performance (8× B200, FSDP):
-# - Tokens/sec: ~150,000-180,000
-# - MFU: 48-58%
+# - Tokens/sec: ~140,000-180,000
+# - MFU: 45-55%
 # - Memory/GPU: ~30-40 GB
-# - Time to 85B tokens: ~130-160 hours (~5-7 days)
+# - Time to 27B tokens: ~40-55 hours (~2 days)
 
 # =============================================================================
 # NOTES & WARNINGS
