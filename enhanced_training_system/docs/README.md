@@ -65,7 +65,31 @@ This folder contains the complete project documentation history, organized chron
 | 28 | `28_qwen3_implementation_plan.md` | Complete implementation roadmap for Qwen3 support |
 | 29 | `29_qwen3_optimal_config_grid_search_results.md` | Qwen3-1.8B optimal config via grid search (1.36e21 FLOPs) |
 | 30 | `30_training_results_visualization_guide.md` | Training results visualization & plotting guide |
-| 31 | `31_training_time_batch_config_analysis.md` | **⭐ NEW** Comprehensive training time & batch configuration analysis |
+| 31 | `31_training_time_batch_config_analysis.md` | Training time & batch configuration analysis |
+| 32 | `32_batched_tokenization_performance_optimization.md` | Batched tokenization performance optimization |
+| 33 | `33_qwen3_tokenizer_correction.md` | Qwen3 tokenizer configuration correction |
+| 34 | `34_b200_mfu_optimization_implementation.md` | B200 MFU optimization implementation |
+| 35 | `35_b200_mfu_scaling_issue.md` | B200 MFU scaling issue analysis |
+| 36 | `36_mfu_global_calculation_update.md` | MFU global calculation update |
+| 37 | `37_gradient_accumulation_per_gpu.md` | Gradient accumulation per-GPU clarification |
+| 38 | `38_config_semantic_update.md` | Configuration semantic update |
+| 39 | `39_b200_mfu_testing_guide.md` | B200 MFU testing guide |
+| 40 | `40_mfu_architecture_dependency_proof.md` | MFU architecture dependency mathematical proof |
+
+### Phase 7: Audit, Data, and Runtime Hardening (41-50)
+
+| # | File | Description |
+|---|------|-------------|
+| 41 | `41_mfu_comparison_nanogpt.md` | MFU calculation comparison: nanoGPT vs audit-compliant |
+| 42 | `42_audit_compliance_summary.md` | 2025 MFU audit compliance report |
+| 43 | `43_mfu_calculation_fix.md` | MFU calculation bug fixes (GQA, logit layer, hardware specs) |
+| 44 | `44_oom_analysis_zero1.md` | OOM analysis and ZeRO-1 optimization guide |
+| 45 | `45_mfu_gold_standard_refactoring.md` | Gold-standard MFU refactor plan and outcomes |
+| 46 | `46_llm_training_incidents.md` | Incident log for Qwen3-1.8B B200 debugging |
+| 47 | `47_dataset_pipeline_627b_guide.md` | SlimPajama-627B staged data pipeline guide |
+| 48 | `48_mfu_version_comparison.md` | Reference for model_builder MFU versions v1–v3 |
+| 49 | `49_training_runtime_best_practices.md` | Production run best practices checklist |
+| 50 | `50_troubleshooting_quick_reference.md` | Symptom-to-fix cheat sheet |
 
 ---
 
@@ -98,8 +122,14 @@ This folder contains the complete project documentation history, organized chron
 
 **Technical Details:**
 - FlashAttention: `05_attention_backends_flash_attention_guide.md`
-- MFU calculation: `12_mfu_calculation_issue_debugging_guide.md`
-- MFU fixes: `13_mfu_fix_summary_palm_formula_implementation.md`
+- MFU calculation (legacy): `12_mfu_calculation_issue_debugging_guide.md`
+- MFU fixes (legacy): `13_mfu_fix_summary_palm_formula_implementation.md`
+- **⭐ NEW: MFU audit (2025)**: `42_audit_compliance_summary.md`
+- **⭐ NEW: MFU calculation fix**: `43_mfu_calculation_fix.md`
+- **⭐ NEW: nanoGPT comparison**: `41_mfu_comparison_nanogpt.md`
+- **⭐ NEW: OOM & ZeRO-1**: `44_oom_analysis_zero1.md`
+- B200 optimization: `34_b200_mfu_optimization_implementation.md`
+- B200 testing: `39_b200_mfu_testing_guide.md`
 
 **Examples & Testing:**
 - Demo guide: `07_complete_demo_guide_architecture_testing.md`
@@ -141,10 +171,32 @@ For the most up-to-date documentation, see the root folder:
 
 ---
 
-**Last Updated:** November 14, 2025  
-**Total Documents:** 31 chronologically organized files
+**Last Updated:** November 24, 2025  
+**Total Documents:** 50 chronologically organized files
 
-**Latest Updates (Nov 14, 2025):**
+**Latest Updates (Nov 24, 2025):**
+- ⭐ **Documents 46-50**: Full-stack incident and operations playbook
+  - 46: Consolidated incident log covering Phantom Zero, sliding window, allocator fixes
+  - 47: Parallel SlimPajama-627B pipeline (mirror ➜ manifest ➜ tokenize ➜ validate)
+  - 48: MFU version mapping (nanoGPT legacy ➜ hybrid ➜ audit)
+  - 49: Production runtime best practices checklist
+  - 50: Troubleshooting quick reference table
+- ✅ **MFU Tracking**: `mfu_versions/` now documented with explicit usage guidance
+- ✅ **Data Pipeline**: Manifest/tokenizer workflow captured for reproducibility
+- ✅ **Training Ops**: Smoke test + checkpoint cadence codified
+
+**Previous Updates (Nov 21, 2025):**
+- ⭐ **Documents 41-45**: MFU Audit Compliance bundle
+  - 41: Comprehensive comparison between nanoGPT and audit-compliant MFU
+  - 42: Complete audit compliance summary for modern architectures
+  - 43: Critical bug fixes (GQA projections, attention scores, logit layer)
+  - 44: OOM analysis and ZeRO-1 memory optimization guide
+  - 45: Audit-compliant refactor implementation details
+- ✅ **MFU Calculation**: Now 2025 audit-compliant (GQA, SwiGLU, large vocabs)
+- ✅ **Hardware Support**: B200 Blackwell dense/sparse toggle
+- ✅ **Architecture**: Handles Qwen 3, Llama 3, Mistral with correct FLOPs
+
+**Previous Updates (Nov 14, 2025):**
 - ⭐ **Document 31**: Training time & batch configuration analysis
   - Comprehensive analysis of actual training times (computed from JSON logs)
   - Batch size configurations and gradient accumulation impact
