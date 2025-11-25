@@ -83,6 +83,7 @@ eval_iters = 200
 eval_only = False # if True, script exits right after the first eval
 eval_at_start = True # if True, run evaluation before first training iteration
 always_save_checkpoint = True # if True, always save a checkpoint after each eval
+keep_all_checkpoints = False # if True, keep every checkpoint instead of overwriting ckpt.pt
 init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
 # logging
 save_log_to_json = True # save training logs to JSON file
@@ -140,6 +141,8 @@ fsdp_activation_checkpointing = False # enable activation checkpointing with FSD
 device = 'cuda' # examples: 'cpu', 'cuda', 'cuda:0', 'cuda:1' etc., or try 'mps' on macbooks
 dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else 'float16' # 'float32', 'bfloat16', or 'float16', the latter will auto implement a GradScaler
 compile = True # use PyTorch 2.0 to compile the model to be faster
+# MFU calculation settings
+use_sparse_specs = False # Use sparse (2:4 sparsity) hardware specs for B200/A6000 MFU calculation. False = dense (honest baseline)
 # Advanced optimizations
 use_cuda_graphs = False # use CUDA Graphs to reduce kernel launch overhead (5-15% speedup, requires static shapes)
 use_dataloader = False # use PyTorch DataLoader with workers (reduces CPU bottleneck on fast GPUs)
@@ -198,14 +201,64 @@ ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=
 # Data loading implementation (modular: simple memmap or PyTorch DataLoader)
 data_dir = os.path.join('data', dataset)
 
+# Attempt to derive dataset metadata (vocab size, dtype, etc.)
+meta_path = os.path.join(data_dir, 'meta.pkl')
+meta_vocab_size = None
+meta_token_dtype = None
+if os.path.exists(meta_path):
+    with open(meta_path, 'rb') as f:
+        meta = pickle.load(f)
+    meta_vocab_size = meta.get('vocab_size')
+    meta_token_dtype = meta.get('dtype')
+    if master_process:
+        print(f"found dataset metadata in {meta_path}: {meta}")
+
+# Determine token dtype (uint16 for GPT-2 era vocabs, uint32 for larger vocabs like Qwen)
+effective_vocab_size = meta_vocab_size if meta_vocab_size is not None else vocab_size
+if meta_token_dtype is not None:
+    token_dtype = getattr(np, meta_token_dtype)
+else:
+    token_dtype = np.uint32 if (effective_vocab_size is not None and effective_vocab_size > 65535) else np.uint16
+
+if master_process:
+    print(f"Dataset tokens will be read as {token_dtype.__name__}")
+
 if use_dataloader:
     # PyTorch DataLoader implementation (better for fast GPUs like B200)
-    from torch.utils.data import Dataset, DataLoader
+    from torch.utils.data import Dataset, DataLoader, Sampler
     
+    class RandomIndexSampler(Sampler):
+        """Memory efficient sampler that draws random indices in small chunks without randperm."""
+        def __init__(self, data_source, seed=0, chunk_size=65536):
+            self.data_source = data_source
+            self.seed = seed
+            self.chunk_size = chunk_size
+            self.num_samples = len(self.data_source)
+            self._epoch = 0
+
+        def __iter__(self):
+            n = len(self.data_source)
+            generator = torch.Generator()
+            generator.manual_seed(self.seed + self._epoch)
+            self._epoch += 1
+
+            samples_remaining = self.num_samples
+            chunk_size = self.chunk_size
+            while samples_remaining > 0:
+                curr = min(chunk_size, samples_remaining)
+                # Generate a chunk of random indices at once for efficiency
+                indices = torch.randint(0, n, (curr,), generator=generator)
+                for idx in indices.tolist():
+                    yield idx
+                samples_remaining -= curr
+
+        def __len__(self):
+            return self.num_samples
+
     class TokenDataset(Dataset):
         """Memory-mapped token dataset for efficient loading."""
-        def __init__(self, data_path, block_size):
-            self.data = np.memmap(data_path, dtype=np.uint16, mode='r')
+        def __init__(self, data_path, block_size, dtype):
+            self.data = np.memmap(data_path, dtype=dtype, mode='r')
             self.block_size = block_size
             # Calculate valid starting positions (exclude last block_size tokens)
             self.num_samples = len(self.data) - block_size
@@ -220,18 +273,19 @@ if use_dataloader:
             return x, y
     
     # Create datasets
-    train_dataset = TokenDataset(os.path.join(data_dir, 'train.bin'), block_size)
-    val_dataset = TokenDataset(os.path.join(data_dir, 'val.bin'), block_size)
+    train_dataset = TokenDataset(os.path.join(data_dir, 'train.bin'), block_size, token_dtype)
+    val_dataset = TokenDataset(os.path.join(data_dir, 'val.bin'), block_size, token_dtype)
     
     # Create dataloaders
+    train_sampler = RandomIndexSampler(train_dataset, seed=1337 + seed_offset)
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
+        sampler=train_sampler,
         num_workers=dataloader_num_workers,
         pin_memory=True,
         persistent_workers=dataloader_num_workers > 0,
         prefetch_factor=dataloader_prefetch_factor if dataloader_num_workers > 0 else None,
-        shuffle=False,  # We'll handle randomness via random sampling
     )
     
     val_loader = DataLoader(
@@ -288,9 +342,9 @@ else:
         # We recreate np.memmap every batch to avoid a memory leak, as per
         # https://stackoverflow.com/questions/45132940/numpy-memmap-memory-usage-want-to-iterate-once/61472122#61472122
         if split == 'train':
-            data = np.memmap(os.path.join(data_dir, 'train.bin'), dtype=np.uint16, mode='r')
+            data = np.memmap(os.path.join(data_dir, 'train.bin'), dtype=token_dtype, mode='r')
         else:
-            data = np.memmap(os.path.join(data_dir, 'val.bin'), dtype=np.uint16, mode='r')
+            data = np.memmap(os.path.join(data_dir, 'val.bin'), dtype=token_dtype, mode='r')
         ix = torch.randint(len(data) - block_size, (batch_size,))
         x = torch.stack([torch.from_numpy((data[i:i+block_size]).astype(np.int64)) for i in ix])
         y = torch.stack([torch.from_numpy((data[i+1:i+1+block_size]).astype(np.int64)) for i in ix])
@@ -307,17 +361,6 @@ else:
 # init these up here, can override if init_from='resume' (i.e. from a checkpoint)
 iter_num = 0
 best_val_loss = 1e9
-
-# attempt to derive vocab_size from the dataset
-meta_path = os.path.join(data_dir, 'meta.pkl')
-meta_vocab_size = None
-if os.path.exists(meta_path):
-    with open(meta_path, 'rb') as f:
-        meta = pickle.load(f)
-    meta_vocab_size = meta['vocab_size']
-    if master_process:
-        print(f"found vocab_size = {meta_vocab_size} (inside {meta_path})")
-
 # Build architecture configuration
 if MODULAR_ARCH_AVAILABLE and arch_preset != 'legacy':
     # Use modular architecture system
@@ -707,7 +750,8 @@ if master_process:
         batch_size * gradient_accumulation_steps_per_gpu * ddp_world_size,
         1.0,
         device_type='cuda',
-        num_gpus=ddp_world_size
+        num_gpus=ddp_world_size,
+        use_sparse_specs=use_sparse_specs
     )
     print(f"\n📈 THEORETICAL PERFORMANCE:")
     print(f"  Hardware peak:         {mfu_info['hardware_peak_tflops']:.1f} TFLOPS ({mfu_info['gpu_name']} {mfu_info['precision']})")
@@ -769,6 +813,22 @@ if master_process:
                 bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]')
 else:
     pbar = None
+
+def _save_checkpoint_file(payload, iteration):
+    """Persist checkpoint payload and optionally keep historical versions."""
+    ckpt_filename = f"ckpt_{iteration:06d}.pt" if keep_all_checkpoints else "ckpt.pt"
+    ckpt_path = os.path.join(out_dir, ckpt_filename)
+    torch.save(payload, ckpt_path)
+    if keep_all_checkpoints:
+        latest_path = os.path.join(out_dir, 'ckpt.pt')
+        try:
+            if os.path.islink(latest_path) or os.path.exists(latest_path):
+                os.remove(latest_path)
+            os.symlink(ckpt_filename, latest_path)
+        except OSError as exc:
+            if master_process:
+                print(f"⚠️ Unable to update ckpt.pt symlink: {exc}")
+    return ckpt_path
 
 while True:
 
@@ -835,9 +895,8 @@ while True:
                             'best_val_loss': best_val_loss,
                             'config': config,
                         }
-                        print(f"💾 Saving checkpoint to {out_dir}")
-                        ckpt_path = os.path.join(out_dir, 'ckpt.pt')
-                        torch.save(checkpoint, ckpt_path)
+                        ckpt_path = _save_checkpoint_file(checkpoint, iter_num)
+                        print(f"💾 Saving checkpoint to {ckpt_path}")
                         
                         # Log checkpoint to JSON
                         if json_logger:
@@ -855,9 +914,8 @@ while True:
                             'best_val_loss': best_val_loss,
                             'config': config,
                         }
-                        print(f"💾 Saving checkpoint to {out_dir}")
-                        ckpt_path = os.path.join(out_dir, 'ckpt.pt')
-                        torch.save(checkpoint, ckpt_path)
+                        ckpt_path = _save_checkpoint_file(checkpoint, iter_num)
+                        print(f"💾 Saving checkpoint to {ckpt_path}")
                         
                         # Log checkpoint to JSON
                         if json_logger:
@@ -873,9 +931,8 @@ while True:
                             'best_val_loss': best_val_loss,
                             'config': config,
                         }
-                        print(f"💾 Saving checkpoint to {out_dir}")
-                        ckpt_path = os.path.join(out_dir, 'ckpt.pt')
-                        torch.save(checkpoint, ckpt_path)
+                        ckpt_path = _save_checkpoint_file(checkpoint, iter_num)
+                        print(f"💾 Saving checkpoint to {ckpt_path}")
                         
                         # Log checkpoint to JSON
                         if json_logger:
@@ -1008,7 +1065,8 @@ while True:
                 batch_size * gradient_accumulation_steps_per_gpu * ddp_world_size,
                 dt,
                 device_type=device_type,
-                num_gpus=ddp_world_size
+                num_gpus=ddp_world_size,
+                use_sparse_specs=use_sparse_specs
             )
             running_mfu = mfu_breakdown['mfu'] if running_mfu == -1.0 else 0.9*running_mfu + 0.1*mfu_breakdown['mfu']
             

@@ -409,20 +409,30 @@ class ConfigurableGPT(nn.Module):
     # ENHANCED MFU CALCULATION (Architecture-aware)
     # ========================================================================
     
-    def estimate_mfu_detailed(self, fwdbwd_per_iter, dt, device_type='cuda', num_gpus=1):
+    def estimate_mfu_detailed(self, fwdbwd_per_iter, dt, device_type='cuda', num_gpus=1, use_sparse_specs=False):
         """
-        Detailed MFU calculation accounting for actual architecture.
+        Audit-compliant MFU calculation for modern Transformer architectures (2025).
+        Refactored to align with "Review MFU Computation Logic" Gold Standard.
+        
+        This implementation uses pure component summation (not parameter-count heuristics):
+        
+        1. Grouped Query Attention (GQA) with explicit Q/K/V separation
+        2. SwiGLU FFN with explicit 3-matrix calculation
+        3. Vocabulary/Logit layer overhead (critical for Qwen)
+        4. Dense vs Sparse hardware peaks (B200 Blackwell support)
+        5. RoPE excluded from MFU numerator (per PaLM definition)
+        
         Args:
             fwdbwd_per_iter: Global number of sequences processed per iteration
                              (micro_batch_size × grad_accum_per_gpu × world_size).
             dt: Wall-clock time for the iteration (seconds).
+            device_type: Device type ('cuda', etc.)
+            num_gpus: Number of GPUs
+            use_sparse_specs: If True, use sparse tensor core specs (2:4 sparsity).
+                             Default False uses dense specs for honest MFU reporting.
         
-        Adjusts FLOPs calculation based on:
-        - FFN type (standard vs SwiGLU)
-        - Position encoding (RoPE overhead)
-        - Normalization (RMSNorm vs LayerNorm)
-        
-        Returns dict with complete MFU breakdown.
+        Returns:
+            dict: Complete MFU breakdown with audit-compliant metrics
         """
         cfg = self.config
         H = cfg.n_embd
@@ -430,104 +440,110 @@ class ConfigurableGPT(nn.Module):
         a = cfg.n_head
         S = cfg.block_size
         D_ff = cfg.d_ff
+        V = cfg.vocab_size
         
-        # ===== ATTENTION FLOPs (same for all architectures) =====
-        # QKV projections: 3 × (2 × S × H × H) = 6SH²
-        attention_qkv_flops = 6 * S * H * H
+        # GQA (Grouped Query Attention) parameters
+        H_kv = getattr(cfg, 'num_key_value_heads', a)  # Default to MHA if not specified
+        G = a / H_kv  # Group size
         
-        # Attention scores: a × S × S × H (QK^T per head)
-        attention_scores_flops = a * S * S * H
+        # ===== 1. ATTENTION FLOPs (GQA-aware, per audit Section 4.1) =====
+        # Q Projection: 2 * S * H * H
+        flops_q = 2 * S * H * H
         
-        # Attention output: a × S × S × H (softmax(QK^T) @ V per head)
-        attention_output_flops = a * S * S * H
+        # K/V Projections: Reduced by Group Size G
+        # K: 2 * S * H * (H/G) | V: 2 * S * H * (H/G)
+        flops_kv = 2 * (2 * S * H * (H / G))
         
-        # Output projection: 2 × S × H × H
-        attention_proj_flops = 2 * S * H * H
+        # Output Projection: 2 * S * H * H
+        flops_proj = 2 * S * H * H
         
-        attention_flops = (attention_qkv_flops + attention_scores_flops + 
-                          attention_output_flops + attention_proj_flops)
+        # Attention Scores (Quadratic): 2 * S * S * H (QK^T)
+        flops_scores = 2 * S * S * H
         
-        # ===== FFN FLOPs (depends on type) =====
+        # Attention Context (Quadratic): 2 * S * S * H (Softmax @ V)
+        flops_context = 2 * S * S * H
+        
+        # Total Attention FLOPs per layer
+        attention_flops = flops_q + flops_kv + flops_proj + flops_scores + flops_context
+        
+        # ===== 2. FFN FLOPs (SwiGLU-aware, per audit Section 3.2) =====
         if cfg.ffn_type == 'swiglu':
-            # SwiGLU: 3 linear layers (gate, value, output)
-            # gate: 2×S×H×D_ff, value: 2×S×H×D_ff, output: 2×S×D_ff×H
-            ffn_flops = 3 * (2 * S * H * D_ff)
+            # SwiGLU: 3 linear layers (Gate, Value, Out)
+            # 3 matrices * (2 * S * H * D_ff)
+            ffn_flops = 6 * S * H * D_ff
         else:
-            # Standard: 2 linear layers (up, down)
-            # up: 2×S×H×D_ff, down: 2×S×D_ff×H
-            ffn_flops = 2 * (2 * S * H * D_ff)
+            # Standard GeLU: 2 linear layers (Up, Down)
+            # 2 matrices * (2 * S * H * D_ff)
+            ffn_flops = 4 * S * H * D_ff
         
-        # ===== POSITION ENCODING FLOPs =====
+        # ===== 3. ROPE & NORM FLOPs =====
+        # RoPE is strictly excluded from MFU per PaLM definition
+        # (non-GEMM operation, not Tensor Core saturating)
         rope_flops = 0
-        if cfg.position_encoding == 'rope':
-            # RoPE rotation operations (approximate)
-            # Per head: rotation of d_k elements for Q and K
-            rope_flops = 2 * a * S * (H // a) * 2  # 2 for Q and K
         
-        # ===== NORMALIZATION FLOPs =====
+        # Norms: 2 per block + 1 final (RMSNorm ≈ 1.5·SH, LayerNorm = 2·SH)
         if cfg.normalization == 'rmsnorm':
-            # RMSNorm: variance computation + rsqrt + multiply
             norm_flops_per_layer = 1.5 * S * H
         else:
-            # LayerNorm: mean + variance + normalize
             norm_flops_per_layer = 2 * S * H
         
-        # 2 norms per block + 1 final norm
-        total_norm_flops = (2 * L + 1) * norm_flops_per_layer
+        # ===== 4. LOGIT FLOPs (Critical for Qwen, per audit Section 5.1) =====
+        # Vocabulary Projection: 2 * S * H * V
+        logit_flops = 2 * S * H * V
         
-        # ===== TOTAL FORWARD PASS FLOPs =====
+        # ===== 5. TOTAL COMPUTE SUMMATION =====
+        # Forward pass per layer
         flops_per_layer = attention_flops + ffn_flops + rope_flops + 2 * norm_flops_per_layer
-        total_forward_flops = L * flops_per_layer + norm_flops_per_layer  # +1 for final norm
         
-        # Per-token FLOPs
-        forward_flops_per_token = total_forward_flops / S
+        # Total Forward Model FLOPs (All Layers + Final Norm + Logits)
+        total_forward_flops = (L * flops_per_layer) + norm_flops_per_layer + logit_flops
         
-        # ===== MFU CALCULATION (PaLM Appendix B) =====
-        # Use PaLM's standard MFU denominator: 6N + 12LHQT (GFLOPs per token)
-        # Where:
-        #   N = non-embedding trainable parameters (billions)
-        #   L = layers, H = heads, Q = head_dim, T = sequence length
-        #   FMA counted as 2 FLOPs; excludes rematerialization
-        # Reference: PaLM paper (Chowdhery et al., 2022), Appendix B
+        # Total Training FLOPs (Forward + Backward)
+        # Standard approximation: Backward = 2 * Forward → Total = 3 * Forward
+        # Strictly excludes Activation Recomputation (HFU vs MFU distinction)
+        model_flops_per_token = 3 * (total_forward_flops / S)
         
-        # Get non-embedding parameter count
-        N_params = self.get_num_params(non_embedding=True)
-        N_billion = N_params / 1e9
-        
-        # PaLM formula components
-        Q = H // a  # head dimension
-        T = S       # sequence length
-        
-        non_attn_flops = 6.0 * N_billion  # GFLOPs/token for non-attention layers
-        attn_flops = 12.0 * L * a * Q * T / 1e9  # GFLOPs/token for attention
-        
-        # Total training FLOPs per token (PaLM MFU denominator)
-        training_flops_per_token = (non_attn_flops + attn_flops) * 1e9  # Convert back to FLOPs
-        
-        # Total FLOPs for this iteration (fwdbwd_per_iter is GLOBAL sequences/iter)
+        # ===== 6. MFU METRICS =====
+        # Total FLOPs for this iteration (Global sequences)
         tokens_per_iter = S * fwdbwd_per_iter
-        flops_per_iter = training_flops_per_token * tokens_per_iter
+        flops_per_iter = model_flops_per_token * tokens_per_iter
         
-        # Achieved throughput (global and per-GPU for clarity)
+        # Achieved throughput
         flops_achieved = flops_per_iter / dt
         flops_achieved_per_gpu = flops_achieved / max(num_gpus, 1)
         tokens_per_sec = tokens_per_iter / dt
         tokens_per_sec_per_gpu = tokens_per_sec / max(num_gpus, 1)
         
-        # ===== HARDWARE SPECS (with B200) =====
-        hardware_specs = {
+        # ===== 7. HARDWARE SPECS (Dense vs Sparse, per audit Section 5.1) =====
+        # Dense specs: standard dense training (realistic for PyTorch)
+        # Sparse specs: with 2:4 structured sparsity (requires special setup)
+        hardware_specs_dense = {
             'cuda': {
-                'B200': {'bf16': 2250e12, 'fp16': 2250e12, 'fp32': 90e12},  # Dense Tensor Core peak (Sparse: 4500 TFLOPS with 2:4 sparsity)
+                'B200': {'bf16': 2250e12, 'fp16': 2250e12, 'fp32': 90e12},
                 'H200': {'bf16': 1979e12, 'fp16': 1979e12, 'fp32': 67e12},
                 'H100': {'bf16': 989e12, 'fp16': 989e12, 'fp32': 67e12},
                 'A100': {'bf16': 312e12, 'fp16': 312e12, 'fp32': 19.5e12},
-                'A6000': {'bf16': 155.0e12, 'fp16': 155.0e12, 'fp32': 38.7e12},  # Dense FP16; datasheet shows 309.7 TF with 2:4 sparsity
+                'A6000': {'bf16': 155.0e12, 'fp16': 155.0e12, 'fp32': 38.7e12},
                 'V100': {'bf16': 125e12, 'fp16': 125e12, 'fp32': 15.7e12},
             }
         }
         
+        hardware_specs_sparse = {
+            'cuda': {
+                'B200': {'bf16': 4500e12, 'fp16': 4500e12, 'fp32': 90e12},  # 2:4 structured sparsity
+                'H200': {'bf16': 1979e12, 'fp16': 1979e12, 'fp32': 67e12},
+                'H100': {'bf16': 1979e12, 'fp16': 1979e12, 'fp32': 67e12},  # 2× dense
+                'A100': {'bf16': 312e12, 'fp16': 312e12, 'fp32': 19.5e12},
+                'A6000': {'bf16': 309.7e12, 'fp16': 309.7e12, 'fp32': 38.7e12},  # 2:4 sparsity
+                'V100': {'bf16': 125e12, 'fp16': 125e12, 'fp32': 15.7e12},
+            }
+        }
+        
+        # Select hardware specs based on mode
+        hardware_specs = hardware_specs_sparse if use_sparse_specs else hardware_specs_dense
+        
         # Auto-detect GPU
-        gpu_name = 'A100'  # Default
+        gpu_name = 'A100'  # Default fallback
         if torch.cuda.is_available():
             gpu_name_full = torch.cuda.get_device_name(0)
             for name in ['B200', 'H200', 'H100', 'A100', 'A6000', 'V100']:
@@ -535,23 +551,23 @@ class ConfigurableGPT(nn.Module):
                     gpu_name = name
                     break
         
-        # Get precision
+        # Get precision from model dtype
         dtype = str(self.token_embeddings.weight.dtype).split('.')[-1]
         precision_key = 'bf16' if 'bfloat16' in dtype else 'fp16' if 'float16' in dtype else 'fp32'
         
         hardware_peak_flops_per_gpu = hardware_specs.get(device_type, {}).get(gpu_name, {}).get(precision_key, 312e12)
         hardware_peak_flops = hardware_peak_flops_per_gpu * num_gpus
         
-        # ===== MFU CALCULATION =====
+        # ===== 8. MFU CALCULATION =====
         mfu = flops_achieved / hardware_peak_flops
         
-        # Return detailed breakdown
+        # Return comprehensive breakdown
         return {
             'mfu': mfu,
             'mfu_percent': mfu * 100,
             'flops_achieved': flops_achieved,
             'flops_achieved_per_gpu': flops_achieved_per_gpu,
-            'flops_per_token': training_flops_per_token,
+            'flops_per_token': model_flops_per_token,
             'tokens_per_sec': tokens_per_sec,
             'tokens_per_sec_per_gpu': tokens_per_sec_per_gpu,
             'tokens_per_iter': tokens_per_iter,
@@ -561,13 +577,14 @@ class ConfigurableGPT(nn.Module):
             'gpu_name': gpu_name,
             'precision': precision_key,
             'num_gpus': num_gpus,
-            'model_params_billion': N_billion,
-            'non_attn_gflops': non_attn_flops,
-            'attn_gflops': attn_flops,
+            'sparse_mode': use_sparse_specs,
+            'gqa_group_size': G,
             'attention_flops_per_layer': attention_flops,
             'ffn_flops_per_layer': ffn_flops,
+            'logit_flops': logit_flops,
             'attention_to_ffn_ratio': attention_flops / ffn_flops if ffn_flops > 0 else 0,
             'architecture': cfg.get_architecture_name(),
+            'calculation_method': 'component_summation_v2025'  # Audit-compliant method
         }
     
     # ========================================================================
@@ -654,7 +671,7 @@ class ConfigurableGPT(nn.Module):
     # ========================================================================
     
     @torch.no_grad()
-    def generate(self, idx, max_new_tokens, temperature=1.0, top_k=None):
+    def generate(self, idx, max_new_tokens, temperature=1.0, top_k=None, eos_token_id=None, repetition_penalty=1.0):
         """
         Text generation (compatible with nanoGPT).
         
@@ -663,9 +680,11 @@ class ConfigurableGPT(nn.Module):
             max_new_tokens: Number of tokens to generate
             temperature: Sampling temperature
             top_k: Top-k filtering (None = no filtering)
+            eos_token_id: If provided, stop generation when this token is produced
+            repetition_penalty: Penalty for repeating tokens (1.0 = no penalty, >1.0 = discourage repetition)
         
         Returns:
-            idx: [B, T + max_new_tokens] - completed sequence
+            idx: [B, T + generated_tokens] - completed sequence
         """
         for _ in range(max_new_tokens):
             # Crop context if too long
@@ -674,6 +693,18 @@ class ConfigurableGPT(nn.Module):
             # Forward pass
             logits, _ = self(idx_cond)
             logits = logits[:, -1, :] / temperature
+            
+            # Apply repetition penalty to tokens already in the sequence
+            if repetition_penalty != 1.0:
+                # Get unique tokens in the current sequence
+                for b in range(idx.size(0)):
+                    unique_tokens = set(idx[b].tolist())
+                    for token_id in unique_tokens:
+                        # Reduce probability of repeated tokens
+                        if logits[b, token_id] > 0:
+                            logits[b, token_id] /= repetition_penalty
+                        else:
+                            logits[b, token_id] *= repetition_penalty
             
             # Top-k filtering
             if top_k is not None:
@@ -686,5 +717,9 @@ class ConfigurableGPT(nn.Module):
             
             # Append to sequence
             idx = torch.cat((idx, idx_next), dim=1)
+            
+            # Early stopping on EOS token
+            if eos_token_id is not None and (idx_next == eos_token_id).any():
+                break
         
         return idx
