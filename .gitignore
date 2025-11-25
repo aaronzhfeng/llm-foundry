@@ -243,3 +243,16 @@ system_implementation/nanoGPT/data/slimpajama_6b_qwen3/
 
 # Flash Attention source (built from source)
 flash-attention/
+
+# W&B logging (can be very large)
+wandb/
+**/wandb/
+
+
+# Dataset large files (keep scripts like prepare.py, download.py)
+enhanced_training_system/data/slimpajama_*/*.bin
+enhanced_training_system/data/slimpajama_*/*.pkl
+enhanced_training_system/data/slimpajama_*/*.log
+enhanced_training_system/data/slimpajama_*/tokenized/
+enhanced_training_system/data/slimpajama_*/tokenized_*/
+enhanced_training_system/data/slimpajama_*/manifests/
