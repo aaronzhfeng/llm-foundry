@@ -206,11 +206,73 @@ Expected for RoPE cache tensors – they are recomputed at runtime.
 
 ## 🚀 Production Deployment
 
-For higher throughput, consider:
+### Quick: Expose to Internet (ngrok/Cloudflare)
 
-1. **Multiple workers**: `uvicorn serve_qwen3:app --workers 4`
-2. **Gunicorn**: `gunicorn serve_qwen3:app -w 4 -k uvicorn.workers.UvicornWorker`
-3. **vLLM conversion**: See `docs/` for HuggingFace format conversion guide
+**Option A: ngrok** (easiest, free tier available)
+```bash
+# Step 1: Sign up at https://dashboard.ngrok.com/signup (free)
+
+# Step 2: Get your authtoken from https://dashboard.ngrok.com/get-started/your-authtoken
+#         It looks like: 2abc123DEF456ghi789JKL_0mnoPQRstu1vwxYZ2ab3c
+
+# Step 3: Configure ngrok with your token
+ngrok config add-authtoken 35z7kbF7gGXghocSKPWK3j5Njwz_3LZAqTuActXprjC1s7T2q
+
+# Step 4 (Terminal 1): Start server
+CUDA_VISIBLE_DEVICES=6 uvicorn serve_qwen3:app --host 0.0.0.0 --port 8000
+
+# Step 5 (Terminal 2): Expose to internet
+ngrok http 8000
+# → Gives you: https://abc123.ngrok-free.app
+```
+
+**Option B: Cloudflare Tunnel** (free, stable, custom domain)
+```bash
+# Install cloudflared: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/tunnel-guide/
+cloudflared tunnel --url http://localhost:8000
+```
+
+**Option C: SSH Tunnel** (no install needed)
+```bash
+ssh -R 80:localhost:8000 serveo.net
+# → Gives you: https://xxx.serveo.net
+```
+
+### Production: Docker + Nginx
+
+For a proper production setup with SSL and rate limiting:
+
+```bash
+cd deploy/
+
+# Build and start
+docker-compose up -d
+
+# Or without Docker:
+./start_production.sh 0 8000  # GPU 0, port 8000
+```
+
+See `deploy/` folder for:
+- `Dockerfile` - Container image
+- `docker-compose.yml` - Full stack with Nginx
+- `nginx.conf` - SSL, rate limiting, CORS
+- `start_production.sh` - Simple production script
+
+### Scaling Options
+
+1. **Multiple workers** (CPU-bound tasks only, model stays on 1 GPU):
+   ```bash
+   uvicorn serve_qwen3:app --workers 4
+   ```
+
+2. **Gunicorn** (better process management):
+   ```bash
+   gunicorn serve_qwen3:app -w 1 -k uvicorn.workers.UvicornWorker --timeout 120
+   ```
+
+3. **Load balancer** (multiple GPUs):
+   - Run separate instances on different ports/GPUs
+   - Use Nginx upstream to load balance
 
 ## 📚 Related Documentation
 

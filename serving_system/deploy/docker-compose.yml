@@ -1,0 +1,43 @@
+# Docker Compose for Production Deployment
+# Includes: FastAPI server + Nginx reverse proxy + SSL
+
+version: '3.8'
+
+services:
+  # Main inference server
+  qwen3-server:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    runtime: nvidia  # Required for GPU access
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - CHECKPOINT=ckpt_160000.pt
+      - USE_COMPILE=true
+    volumes:
+      - /raid/zhf004/out-qwen3-1.8b-b200-50h:/checkpoints:ro
+      - ../enhanced_training_system:/app/enhanced_training_system:ro
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Nginx reverse proxy (optional, for SSL/domain)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro  # Mount SSL certs here
+    depends_on:
+      - qwen3-server
+    restart: unless-stopped
+

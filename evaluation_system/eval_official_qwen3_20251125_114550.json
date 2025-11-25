@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-11-25T11:42:07.569888",
+  "model": "Qwen/Qwen2.5-1.5B",
+  "model_type": "official_hf",
+  "benchmarks": {
+    "openbookqa": {
+      "accuracy": 0.402,
+      "correct": 201,
+      "total": 500
+    },
+    "arc_challenge": {
+      "accuracy": 0.43686006825938567,
+      "correct": 512,
+      "total": 1172
+    },
+    "arc_easy": {
+      "accuracy": 0.7356902356902357,
+      "correct": 1748,
+      "total": 2376
+    }
+  }
+}
