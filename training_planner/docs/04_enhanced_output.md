@@ -183,8 +183,8 @@ Active parameters: 3.5% utilization        ← MoE efficiency!
 
 ```bash
 # Enhanced analysis ready for MFU calculations:
-python detailed_cost_analysis.py --model_config llama_7b_config.json
-python detailed_cost_analysis.py --model_config deepseek_v3_config.json
+python analyze.py --model_config llama_7b_config.json
+python analyze.py --model_config deepseek_v3_config.json
 
 # All metrics needed for MFU are now in the output!
 ```

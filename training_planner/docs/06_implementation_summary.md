@@ -69,32 +69,32 @@ L(N,D) = E + A·N^(-α) + B·D^(-β)
 
 ### Test 1: Forward Analysis (Existing Feature)
 ```bash
-$ python detailed_cost_analysis.py --model_config llama_7b_config.json
+$ python analyze.py --model_config llama_7b_config.json
 ✅ PASS - N=6.74B, FLOPs=61.71 TF, Memory=86.65 GB
 ```
 
 ### Test 2: JSONC Comment Support (NEW Feature)
 ```bash
-$ python detailed_cost_analysis.py --model_config example_llama_config.jsonc
+$ python analyze.py --model_config example_llama_config.jsonc
 ✅ PASS - Comments parsed correctly, same results as .json
 ```
 
 ### Test 3: Backward Scaling Law (NEW Feature)
 ```bash
-$ python detailed_cost_analysis.py --backward_config backward_scaling_config.jsonc
+$ python analyze.py --backward_config backward_scaling_config.jsonc
 ✅ PASS - N=6.89B, D=102.09B, C=9.23e+21, Loss=2.2133
 ```
 
 ### Test 4: Validation (Existing Feature)
 ```bash
-$ python detailed_cost_analysis.py --validate
+$ python analyze.py --validate
 ✅ PASS - All formula validations pass
 ```
 
 ## 📁 File Changes Summary
 
 ### Modified Files (2)
-1. **`detailed_cost_analysis.py`**
+1. **`analyze.py`**
    - Added `load_json_with_comments()` function
    - Added `backward_scaling_from_config()` function
    - Updated all `json.load()` calls to use new function
@@ -181,13 +181,13 @@ Using Hoffmann et al. (2022) parameters:
 ### Quick Start Commands
 ```bash
 # Forward: Architecture → N, FLOPs, Memory
-python detailed_cost_analysis.py --model_config example_llama_config.jsonc
+python analyze.py --model_config example_llama_config.jsonc
 
 # Backward: Training Setup → N, D, C, Loss
-python detailed_cost_analysis.py --backward_config backward_scaling_config.jsonc
+python analyze.py --backward_config backward_scaling_config.jsonc
 
 # Validation
-python detailed_cost_analysis.py --validate
+python analyze.py --validate
 ```
 
 ## ✨ Summary

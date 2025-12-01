@@ -136,7 +136,7 @@ This implementation provides:
 
 ## Files Created
 
-- `detailed_cost_analysis.py` - Main implementation with detailed formulas
+- `analyze.py` - Main implementation with detailed formulas
 - `ACADEMIC_FORMULAS_README.md` - Comprehensive comparison document
 - `README.md` - Original documentation (updated with academic approach)
 - `example_usage.py` - Usage examples

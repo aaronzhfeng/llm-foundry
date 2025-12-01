@@ -1,26 +1,26 @@
-# Detailed LLM Training Cost Analysis
+# Training Planner
 
-A comprehensive tool for calculating parameters, FLOPs, and memory requirements for Large Language Models using **detailed academic formulas** instead of simplified approximations.
+A comprehensive tool for **planning LLM training** - calculating parameters, FLOPs, memory requirements, and optimal training configurations using **detailed academic formulas** (not simplified approximations).
 
 ## 🚀 Quick Start
 
 ```bash
-cd /Users/aaronfeng/Repo/llm_TII/flops_parameter_counting/
+cd training_planner/
 
-# Analyze existing model architecture
-python detailed_cost_analysis.py --model_config llama_7b_config.json
-
-# Analyze with annotated example (JSONC with comments)
-python detailed_cost_analysis.py --model_config example_llama_config.jsonc
+# Analyze existing model architecture (Forward Analysis)
+python analyze.py --model_config configs/models/llama_7b_config.json
 
 # Analyze DeepSeek V3 MoE model
-python detailed_cost_analysis.py --model_config deepseek_v3_config.json
+python analyze.py --model_config configs/models/deepseek_v3_config.json
 
-# NEW: Backward scaling - Find optimal D from training setup
-python detailed_cost_analysis.py --backward_config backward_scaling_config.jsonc
+# Backward scaling - Find optimal D from training setup
+python analyze.py --backward_config configs/scaling_laws/hoffmann/backward_scaling_config.jsonc
+
+# Besiroglu 2024 scaling law
+python analyze.py --backward_config configs/scaling_laws/besiroglu/backward_scaling_besiroglu.jsonc
 
 # Run validation tests
-python detailed_cost_analysis.py --validate
+python analyze.py --validate
 ```
 
 ## 📋 Overview
@@ -39,7 +39,7 @@ The commonly used "6ND" formula from Chinchilla paper is **too simplified**. Thi
 - ✅ Include **component breakdown** (attention vs FFN costs)
 - ✅ Handle **architecture-specific optimizations** (MoE, GQA, MLA)
 
-**Reference**: See [ACADEMIC_FORMULAS_README.md](docs/ACADEMIC_FORMULAS_README.md) for detailed comparison.
+**Reference**: See [01_academic_formulas.md](docs/01_academic_formulas.md) for detailed comparison.
 
 ## 🛠️ Installation
 
@@ -47,10 +47,10 @@ No additional dependencies required! Uses only Python standard library modules.
 
 ```bash
 # Navigate to the implementation directory
-cd flops_parameter_counting/
+cd training_planner/
 
 # Ready to use!
-python detailed_cost_analysis.py --help
+python analyze.py --help
 ```
 
 ## 📖 Usage
@@ -58,7 +58,7 @@ python detailed_cost_analysis.py --help
 ### Command Line Options
 
 ```bash
-python detailed_cost_analysis.py [OPTIONS]
+python analyze.py [OPTIONS]
 
 Options:
   --model_config PATH      Path to model architecture config file (forward analysis)
@@ -96,7 +96,7 @@ The backward config allows you to specify your entire training infrastructure an
 ### Example 1: LLaMA 7B Analysis
 
 ```bash
-python detailed_cost_analysis.py --model_config llama_7b_config.json
+python analyze.py --model_config llama_7b_config.json
 ```
 
 **Enhanced Output** (with MFU-ready metrics):
@@ -129,7 +129,7 @@ Training FLOPs (1T tokens): 167400670.49 EFLOPs
 ### Example 2: DeepSeek V3 MoE Analysis
 
 ```bash
-python detailed_cost_analysis.py --model_config deepseek_v3_config.json
+python analyze.py --model_config deepseek_v3_config.json
 ```
 
 **Enhanced Output** (with MoE-specific metrics):
@@ -165,7 +165,7 @@ Training FLOPs (1T tokens): 375433828.76 EFLOPs
 ### Example 3: Backward Scaling Law (NEW!)
 
 ```bash
-python detailed_cost_analysis.py --backward_config backward_scaling_config.json
+python analyze.py --backward_config backward_scaling_config.json
 ```
 
 **Output**:
@@ -239,7 +239,7 @@ FLOPs per token:          48.00 GFLOPs (forward)
 ### Example 4: Validation Tests
 
 ```bash
-python detailed_cost_analysis.py --validate
+python analyze.py --validate
 ```
 
 **Output**:
@@ -334,7 +334,7 @@ Create your own model config JSON:
 
 Then analyze:
 ```bash
-python detailed_cost_analysis.py --model_config my_custom_config.json
+python analyze.py --model_config my_custom_config.json
 ```
 
 ### MFU (Model Flops Utilization) Calculation
@@ -429,14 +429,15 @@ Shows proper **quadratic scaling** for attention mechanism:
 ## 📚 Documentation
 
 ### Main Documentation
-- **[ACADEMIC_FORMULAS_README.md](docs/ACADEMIC_FORMULAS_README.md)** - Comprehensive comparison of academic vs simplified formulas
-- **[FORMULA_COMPARISON.md](docs/FORMULA_COMPARISON.md)** - Why 6ND is too simplified
-- **[IMPLEMENTATION_COMPLETE.md](docs/IMPLEMENTATION_COMPLETE.md)** - Full implementation overview
+- **[01_academic_formulas.md](docs/01_academic_formulas.md)** - Comprehensive comparison of academic vs simplified formulas
+- **[02_formula_comparison.md](docs/02_formula_comparison.md)** - Why 6ND is too simplified
+- **[07_implementation_complete.md](docs/07_implementation_complete.md)** - Full implementation overview
 
 ### Quick Reference
 - **This README.md** - Usage guide and examples
-- **detailed_cost_analysis.py** - Source code with inline documentation and citations
-- **Configuration files** - JSON examples for LLaMA and DeepSeek models
+- **analyze.py** - Source code with inline documentation and citations
+- **configs/models/** - Model architecture configurations
+- **configs/scaling_laws/** - Scaling law configurations (Hoffmann, Besiroglu)
 
 ## 🆚 Why Not 6ND?
 
@@ -457,21 +458,23 @@ The simplified **6ND formula** (`C = 6 × N × D`) misses critical details:
 ### ImportError
 ```bash
 # Make sure you're in the correct directory
-cd flops_parameter_counting/
-python detailed_cost_analysis.py --help
+cd training_planner/
+python analyze.py --help
 ```
 
 ### Config File Not Found
 ```bash
-# Ensure JSON files are in the same directory
-ls *.json
-# Should show: deepseek_v3_config.json  llama_7b_config.json
+# List model configs
+ls configs/models/*.json
+
+# List scaling law configs
+ls configs/scaling_laws/*/
 ```
 
 ### Unexpected Results
 ```bash
 # Run validation to check implementation
-python detailed_cost_analysis.py --validate
+python analyze.py --validate
 ```
 
 ## 🤝 Contributing
@@ -495,11 +498,11 @@ This implementation is for educational and research purposes. Refer to the origi
 
 | Command | Purpose | Example |
 |---------|---------|---------|
-| `--model_config llama_7b_config.json` | Analyze existing architecture | `python detailed_cost_analysis.py --model_config llama_7b_config.json` |
-| `--model_config example_llama_config.jsonc` | Analyze with annotated example | `python detailed_cost_analysis.py --model_config example_llama_config.jsonc` |
-| `--model_config deepseek_v3_config.json` | Analyze MoE model | `python detailed_cost_analysis.py --model_config deepseek_v3_config.json` |
-| `--backward_config backward_scaling_config.jsonc` | **NEW:** Find optimal D from training setup | `python detailed_cost_analysis.py --backward_config backward_scaling_config.jsonc` |
-| `--validate` | Run validation tests | `python detailed_cost_analysis.py --validate` |
+| Forward Analysis | Model → FLOPs/params | `python analyze.py --model_config configs/models/llama_7b_config.json` |
+| MoE Analysis | DeepSeek V3 | `python analyze.py --model_config configs/models/deepseek_v3_config.json` |
+| Backward Scaling (Hoffmann) | Compute → Optimal (N, D) | `python analyze.py --backward_config configs/scaling_laws/hoffmann/backward_scaling_config.jsonc` |
+| Backward Scaling (Besiroglu) | Epoch AI 2024 | `python analyze.py --backward_config configs/scaling_laws/besiroglu/backward_scaling_besiroglu.jsonc` |
+| Validation | Run tests | `python analyze.py --validate` |
 
 **Note:** Both `.json` and `.jsonc` (with comments) formats are supported.
 

@@ -1,15 +1,15 @@
-# Quick Reference - New Organized Structure
+# Quick Reference - Training Planner
 
-## 📁 New Directory Structure (Updated!)
+## 📁 Directory Structure
 
 ```
-flops_parameter_counting/
+training_planner/
 ├── configs/
 │   ├── models/              # Forward analysis configs
-│   │   ├── llama_1.36b.json      # Your LLaMA 1.36B model ✨ NEW
-│   │   ├── gpt2_1.36b.json       # Your GPT-2 1.36B model ✨ NEW
-│   │   ├── llama_7b.json         # Reference LLaMA 7B
-│   │   ├── deepseek_v3.json      # DeepSeek V3 MoE
+│   │   ├── llama_1.36b.json      # LLaMA 1.36B model
+│   │   ├── gpt2_1.36b.json       # GPT-2 1.36B model
+│   │   ├── llama_7b_config.json  # Reference LLaMA 7B
+│   │   ├── deepseek_v3_config.json  # DeepSeek V3 MoE
 │   │   └── README.md             # Model configs documentation
 │   │
 │   └── scaling_laws/        # Backward analysis configs
@@ -18,12 +18,13 @@ flops_parameter_counting/
 │       ├── besiroglu/       # Updated law (2024)
 │       │   └── backward_scaling_besiroglu.jsonc
 │       ├── custom/          # Custom experiments
-│       │   ├── verify_llama_1.36b.jsonc  ✨ NEW
+│       │   ├── verify_llama_1.36b.jsonc
 │       │   ├── backward_scaling_auto.jsonc
 │       │   └── backward_scaling_flash.jsonc
 │       └── README.md        # Scaling laws documentation
 │
-├── detailed_cost_analysis.py     # Main script (updated)
+├── analyze.py               # Main analysis script
+├── archive/                 # Old versions
 └── README.md
 ```
 
@@ -33,25 +34,25 @@ flops_parameter_counting/
 
 ```bash
 # Just specify filename - script searches configs/models/ automatically!
-python detailed_cost_analysis.py --model_config llama_1.36b.json
-python detailed_cost_analysis.py --model_config gpt2_1.36b.json
+python analyze.py --model_config llama_1.36b.json
+python analyze.py --model_config gpt2_1.36b.json
 
 # Or specify full path
-python detailed_cost_analysis.py --model_config configs/models/llama_7b.json
+python analyze.py --model_config configs/models/llama_7b.json
 ```
 
 ### Backward Analysis (Calculate N and D from Compute Budget)
 
 ```bash
 # Just specify filename - script searches configs/scaling_laws/ automatically!
-python detailed_cost_analysis.py --backward_config verify_llama_1.36b.jsonc
+python analyze.py --backward_config verify_llama_1.36b.jsonc
 
 # Or specify subdirectory
-python detailed_cost_analysis.py --backward_config hoffmann/backward_scaling_config.jsonc
-python detailed_cost_analysis.py --backward_config besiroglu/backward_scaling_besiroglu.jsonc
+python analyze.py --backward_config hoffmann/backward_scaling_config.jsonc
+python analyze.py --backward_config besiroglu/backward_scaling_besiroglu.jsonc
 
 # Or full path
-python detailed_cost_analysis.py --backward_config configs/scaling_laws/custom/verify_llama_1.36b.jsonc
+python analyze.py --backward_config configs/scaling_laws/custom/verify_llama_1.36b.jsonc
 ```
 
 ## 🎯 Common Use Cases
@@ -60,7 +61,7 @@ python detailed_cost_analysis.py --backward_config configs/scaling_laws/custom/v
 
 ```bash
 # Forward: Calculate N (parameters)
-python detailed_cost_analysis.py --model_config llama_1.36b.json
+python analyze.py --model_config llama_1.36b.json
 
 # Expected output:
 #   Model parameters (N): 1.29B
@@ -71,7 +72,7 @@ python detailed_cost_analysis.py --model_config llama_1.36b.json
 
 ```bash
 # Backward: Calculate N and D from compute budget
-python detailed_cost_analysis.py --backward_config verify_llama_1.36b.jsonc
+python analyze.py --backward_config verify_llama_1.36b.jsonc
 
 # Expected output:
 #   N = 1.29B parameters
@@ -83,8 +84,8 @@ python detailed_cost_analysis.py --backward_config verify_llama_1.36b.jsonc
 
 ```bash
 # Analyze both architectures
-python detailed_cost_analysis.py --model_config gpt2_1.36b.json
-python detailed_cost_analysis.py --model_config llama_1.36b.json
+python analyze.py --model_config gpt2_1.36b.json
+python analyze.py --model_config llama_1.36b.json
 
 # Compare:
 #   GPT-2: ~1.41B params, ~32 GFLOPs/token (faster)
@@ -112,16 +113,16 @@ The script now automatically searches in the new directory structure:
 
 ```bash
 # These all work:
-python detailed_cost_analysis.py --model_config llama_1.36b.json
-python detailed_cost_analysis.py --model_config configs/models/llama_1.36b.json
-python detailed_cost_analysis.py --model_config /full/path/to/llama_1.36b.json
+python analyze.py --model_config llama_1.36b.json
+python analyze.py --model_config configs/models/llama_1.36b.json
+python analyze.py --model_config /full/path/to/llama_1.36b.json
 ```
 
 ## 🆕 What Changed?
 
 ### Old Structure (Deprecated)
 ```
-flops_parameter_counting/
+training_planner/
 ├── llama_7b_config.json
 ├── deepseek_v3_config.json
 ├── backward_scaling_config.jsonc
@@ -130,7 +131,7 @@ flops_parameter_counting/
 
 ### New Structure (Current)
 ```
-flops_parameter_counting/
+training_planner/
 └── configs/
     ├── models/           # Model architecture configs
     └── scaling_laws/     # Scaling law configs
@@ -164,7 +165,7 @@ cat > configs/models/my_model.json << 'EOF'
 EOF
 
 # Use it
-python detailed_cost_analysis.py --model_config my_model.json
+python analyze.py --model_config my_model.json
 ```
 
 ### Add a New Scaling Law Config
@@ -180,7 +181,7 @@ cat > configs/scaling_laws/custom/my_experiment.jsonc << 'EOF'
 EOF
 
 # Use it
-python detailed_cost_analysis.py --backward_config my_experiment.jsonc
+python analyze.py --backward_config my_experiment.jsonc
 ```
 
 ## 📚 Documentation
@@ -194,10 +195,10 @@ python detailed_cost_analysis.py --backward_config my_experiment.jsonc
 
 ```bash
 # Show usage and examples
-python detailed_cost_analysis.py --help
+python analyze.py --help
 
 # Run validation tests
-python detailed_cost_analysis.py --validate
+python analyze.py --validate
 ```
 
 ## ✅ Verification Checklist
@@ -206,11 +207,11 @@ To verify your LLaMA 1.36B model matches the scaling law optimization:
 
 ```bash
 # 1. Check N (forward analysis)
-python detailed_cost_analysis.py --model_config llama_1.36b.json | grep "Model parameters"
+python analyze.py --model_config llama_1.36b.json | grep "Model parameters"
 # Expected: 1.29B
 
 # 2. Check N and D (backward analysis)
-python detailed_cost_analysis.py --backward_config verify_llama_1.36b.jsonc | grep -E "Model parameters|Optimal tokens"
+python analyze.py --backward_config verify_llama_1.36b.jsonc | grep -E "Model parameters|Optimal tokens"
 # Expected: N=1.29B, D=84.72B
 
 # 3. Verify it matches your JSON

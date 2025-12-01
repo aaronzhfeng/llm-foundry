@@ -13,12 +13,12 @@ Standard HuggingFace-style JSON configs with architecture parameters.
 - **`llama_1.36b.json`** - LLaMA 1.36B production model
   - From: `enhanced_training_system/info/llama_1.36e21_32kV.json`
   - Parameters: ~1.29B
-  - Use: `python detailed_cost_analysis.py --model_config configs/models/llama_1.36b.json`
+  - Use: `python analyze.py --model_config configs/models/llama_1.36b.json`
 
 - **`gpt2_1.36b.json`** - GPT-2 1.36B for comparison
   - From: `enhanced_training_system/config/full_gpt2_1.36b.py`
   - Parameters: ~1.41B
-  - Use: `python detailed_cost_analysis.py --model_config configs/models/gpt2_1.36b.json`
+  - Use: `python analyze.py --model_config configs/models/gpt2_1.36b.json`
 
 ### Reference Models
 
@@ -37,13 +37,13 @@ Standard HuggingFace-style JSON configs with architecture parameters.
 
 ```bash
 # Analyze LLaMA 1.36B
-python detailed_cost_analysis.py --model_config configs/models/llama_1.36b.json
+python analyze.py --model_config configs/models/llama_1.36b.json
 
 # Analyze GPT-2 1.36B
-python detailed_cost_analysis.py --model_config configs/models/gpt2_1.36b.json
+python analyze.py --model_config configs/models/gpt2_1.36b.json
 
 # Compare both
-python detailed_cost_analysis.py \
+python analyze.py \
   --model_config configs/models/llama_1.36b.json \
   --model_config configs/models/gpt2_1.36b.json
 ```

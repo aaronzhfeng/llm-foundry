@@ -7,7 +7,7 @@ You were **absolutely right**! The 6ND formula is indeed **too simplified**. Thi
 ## 📁 Files Created
 
 ### Core Implementation
-- **`detailed_cost_analysis.py`** (661 lines)
+- **`analyze.py`** (661 lines)
   - Main implementation with detailed academic formulas
   - Follows original `model_training_cost_analysis.py` structure exactly
   - Only adds comments and helper functions (no restructuring)
@@ -95,16 +95,16 @@ Training = 3× Forward (1 forward + 2 backward)
 
 ```bash
 # Analyze LLaMA 7B with detailed formulas
-python detailed_cost_analysis.py --model_config llama_7b_config.json
+python analyze.py --model_config llama_7b_config.json
 
 # Analyze DeepSeek V3 MoE
-python detailed_cost_analysis.py --model_config deepseek_v3_config.json
+python analyze.py --model_config deepseek_v3_config.json
 
 # Budget optimization (still uses 6ND for scaling laws)
-python detailed_cost_analysis.py --training_budget 10000
+python analyze.py --training_budget 10000
 
 # Run validation
-python detailed_cost_analysis.py --validate
+python analyze.py --validate
 ```
 
 ## 📊 Sample Output
@@ -177,7 +177,7 @@ The implementation **follows the original structure exactly**:
 
 **To integrate back**:
 ```bash
-cp detailed_cost_analysis.py ../cse234-w25-PA/pa3/part2/model_training_cost_analysis.py
+cp analyze.py ../cse234-w25-PA/pa3/part2/model_training_cost_analysis.py
 ```
 
 ## ✅ All Requirements Met

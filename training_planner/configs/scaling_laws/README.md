@@ -17,15 +17,15 @@ scaling_laws/
 
 ```bash
 # Using Hoffmann scaling law
-python detailed_cost_analysis.py \
+python analyze.py \
   --backward_config configs/scaling_laws/hoffmann/backward_scaling_config.jsonc
 
 # Using Besiroglu scaling law (newer)
-python detailed_cost_analysis.py \
+python analyze.py \
   --backward_config configs/scaling_laws/besiroglu/backward_scaling_besiroglu.jsonc
 
 # Verify LLaMA 1.36B
-python detailed_cost_analysis.py \
+python analyze.py \
   --backward_config configs/scaling_laws/custom/verify_llama_1.36b.jsonc
 ```
 

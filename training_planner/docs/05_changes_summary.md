@@ -6,7 +6,7 @@ Updated the detailed cost analysis system with a new **backward scaling law** fe
 
 ## ✅ Files Modified
 
-### 1. `detailed_cost_analysis.py`
+### 1. `analyze.py`
 **Changes:**
 - ✅ Added new function: `backward_scaling_from_config(config_path)`
   - Calculates N from architecture (detailed formula)
@@ -62,7 +62,7 @@ Updated the detailed cost analysis system with a new **backward scaling law** fe
 
 ### Before (Old System)
 ```bash
-python detailed_cost_analysis.py --training_budget 10000
+python analyze.py --training_budget 10000
 ```
 - ❌ Only dollar budget input
 - ❌ Assumed generic GPU
@@ -72,7 +72,7 @@ python detailed_cost_analysis.py --training_budget 10000
 
 ### After (New System)
 ```bash
-python detailed_cost_analysis.py --backward_config backward_scaling_config.json
+python analyze.py --backward_config backward_scaling_config.json
 ```
 - ✅ Complete training setup specification
 - ✅ Actual GPU configuration (type, count, peak FLOPs)
@@ -118,19 +118,19 @@ All modes tested and working:
 
 ### ✅ Backward Scaling (NEW)
 ```bash
-$ python detailed_cost_analysis.py --backward_config backward_scaling_config.json
+$ python analyze.py --backward_config backward_scaling_config.json
 # Output: N=6.89B, D=102.09B, C=9.23e+21, Loss=2.2133
 ```
 
 ### ✅ Forward Analysis (Existing)
 ```bash
-$ python detailed_cost_analysis.py --model_config llama_7b_config.json
+$ python analyze.py --model_config llama_7b_config.json
 # Output: N=6.74B, FLOPs=61.71 TF, Memory=86.65 GB
 ```
 
 ### ✅ Validation (Existing)
 ```bash
-$ python detailed_cost_analysis.py --validate
+$ python analyze.py --validate
 # Output: Parameter and FLOPs validation tests
 ```
 

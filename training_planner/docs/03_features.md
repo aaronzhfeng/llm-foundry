@@ -131,14 +131,14 @@ Besiroglu (2024): N=6.89B, D=102.09B, Loss=2.1957 (0.8% lower)
 cd /Users/aaronfeng/Repo/Hao/dsc180_a06/scaling_law_analysis
 
 # Simplest usage (auto-detection)
-python detailed_cost_analysis.py --backward_config backward_scaling_auto.jsonc
+python analyze.py --backward_config backward_scaling_auto.jsonc
 
 # Compare scaling laws
-python detailed_cost_analysis.py --backward_config backward_scaling_hoffmann.jsonc
-python detailed_cost_analysis.py --backward_config backward_scaling_besiroglu.jsonc
+python analyze.py --backward_config backward_scaling_hoffmann.jsonc
+python analyze.py --backward_config backward_scaling_besiroglu.jsonc
 
 # Forward analysis
-python detailed_cost_analysis.py --model_config example_llama_config.jsonc
+python analyze.py --model_config example_llama_config.jsonc
 ```
 
 ---
