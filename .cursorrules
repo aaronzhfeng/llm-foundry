@@ -1,5 +1,0 @@
-
-# Only produce additional .md file if asked or necessary, for documentary purpose .md, place them under docs folder, if no such folder exists in the working dirctory, create one, and keep the files in such folder ordered by having a number at the begining of all names.
-# Avoid running training commands on your own, provide command and have me run it
-
-# Prefer modular solutions over monolithic functions
