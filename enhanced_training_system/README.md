@@ -470,7 +470,7 @@ enhanced_training_system/
 │   ├── EXAMPLE_OUTPUT.md      # Terminal output examples
 │   └── ...
 │
-├── data -> ../system_implementation/nanoGPT/data
+├── data/                      # Dataset directories
 ├── compare_architectures.py    # Architecture comparison tool
 ├── test_imports.py            # Import verification
 ├── TESTING.md                 # **All testing commands**

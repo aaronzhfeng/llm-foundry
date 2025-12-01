@@ -27,8 +27,8 @@ A **complete end-to-end infrastructure** for training Large Language Models from
   │  • Token Count   │     │  • Qwen3 Vocab   │     │  • ZeRO-1/FSDP   │
   └──────────────────┘     └──────────────────┘     └──────────────────┘
            │                        │                        │
-           │   flops_parameter_     │   enhanced_training_   │   enhanced_training_
-           │   counting/            │   system/data/         │   system/train.py
+           │   training_planner/    │   enhanced_training_   │   enhanced_training_
+           │                        │   system/data/         │   system/train.py
            │                        │                        │
            ▼                        ▼                        ▼
   ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -43,15 +43,15 @@ A **complete end-to-end infrastructure** for training Large Language Models from
            │                        │                        │
            ▼                        ▼                        ▼
   ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
-  │  4. EVALUATION   │     │  5. SERVING      │     │  6. ANALYSIS     │
+  │  4. EVALUATION   │     │  5. SERVING      │     │  6. POST-TRAIN   │
   │                  │     │                  │     │                  │
-  │  • ARC-E/C       │ ──▶│  • FastAPI       │ ──▶ │  • MFU Compute   │
-  │  • OpenBookQA    │     │  • Chat UI       │     │  • Loss Curves   │
-  │  • Log-prob      │     │  • REST API      │     │  • Scaling Fit   │
+  │  • ARC-E/C       │ ──▶│  • FastAPI       │ ──▶ │  • SFT           │
+  │  • OpenBookQA    │     │  • Chat UI       │     │  • DPO           │
+  │  • Log-prob      │     │  • REST API      │     │  • Alignment     │
   │  • Generation    │     │  • Production    │     │                  │
   └──────────────────┘     └──────────────────┘     └──────────────────┘
            │                        │                        │
-           │   evaluation_system/   │   serving_system/      │   MFU_compute/
+           │   evaluation_system/   │   serving_system/      │   post_training/
            │                        │                        │
            └────────────────────────┴────────────────────────┘
 ```
@@ -71,46 +71,42 @@ llm_TII/
 │   ├── training_logger.py           # Detailed JSON logging
 │   ├── config/                      # Configuration files
 │   │   ├── full_qwen3_1.8b_b200_optimal.py  # 🌟 Flagship config
-│   │   ├── full_llama2_1.36b_b200_optimal.py
-│   │   └── archived/                # GPT-2, LLaMA variants
+│   │   └── full_llama2_1.36b_b200_optimal.py
 │   ├── data/                        # Dataset preparation
 │   │   ├── slimpajama_627b_qwen3/   # 🌟 Production dataset (627B tokens)
-│   │   ├── slimpajama_6b_qwen3/     # Quick testing subset
-│   │   └── shakespeare/             # Debugging dataset
-│   ├── docs/                        # Detailed documentation (50+ docs)
-│   └── plots/                       # Training visualization
+│   │   └── slimpajama_6b_qwen3/     # Quick testing subset
+│   └── docs/                        # Detailed documentation (50+ docs)
 │
-├── 📊 flops_parameter_counting/     # [ANALYSIS] FLOPs, Parameters & Scaling Laws
-│   ├── detailed_cost_analysis.py    # 🌟 Main analysis tool
+├── 📊 training_planner/             # [ANALYSIS] FLOPs, Parameters & Scaling Laws
+│   ├── analyze.py                   # 🌟 Main analysis tool
 │   │   ├── Forward analysis         # Model → FLOPs/params
 │   │   └── Backward scaling         # Compute budget → Optimal (N, D)
 │   ├── configs/
 │   │   ├── models/                  # LLaMA, DeepSeek V3 MoE configs
-│   │   └── scaling_laws/            # Chinchilla, Kaplan parameters
+│   │   └── scaling_laws/            # Chinchilla (Hoffmann), Besiroglu 2024
 │   └── docs/                        # Academic formulas & references
 │
-├── ⚡ MFU_compute/                   # MFU calculation tools
-│   ├── mfu_analysis.py              # Detailed MFU analysis
-│   ├── simple_mfu_analysis.py       # Quick MFU estimation
-│   └── *_config.json                # Hardware configurations (B200/H200/H100/A100)
+├── 🎯 post_training/                # SFT & DPO alignment
+│   ├── train_sft.py                 # Supervised Fine-Tuning
+│   ├── train_dpo.py                 # Direct Preference Optimization
+│   ├── data/                        # Dataset preparation scripts
+│   └── configs/                     # Training configurations
 │
 ├── 🧪 evaluation_system/            # Model evaluation
 │   ├── eval_benchmarks.py           # Benchmark runner (ARC, OpenBookQA)
 │   ├── eval_qwen3_official.py       # Official Qwen3 comparison
-│   └── plot_comparison.py           # Results visualization
+│   └── docs/                        # Evaluation guides
 │
 ├── 🌐 serving_system/               # Production deployment
 │   ├── serve_qwen3.py               # FastAPI server with Chat UI
 │   ├── static/index.html            # Modern chat interface
 │   └── deploy/                      # Docker, Nginx configs
 │
-├── 🔬 system_implementation/        # [ARCHIVE] Early-stage experiments
-│   ├── nanoGPT/                     # Base reference implementation
-│   ├── phase1_zero1/                # ZeRO-1 prototypes
-│   ├── phase2_triton/               # Triton kernel experiments
-│   └── phase3_fsdp/                 # FSDP prototypes
-│
-└── 📚 legacy/                       # Deprecated implementations
+└── 📦 archive/                      # Historical development artifacts
+    ├── development_phases/          # nanoGPT → ZeRO-1 → Triton → FSDP
+    ├── scaling_law_standalone/      # Early scaling law tool
+    ├── mfu_compute_standalone/      # Early MFU tool
+    └── legacy_cost_analysis/        # Deprecated cost scripts
 ```
 
 ---
@@ -202,12 +198,13 @@ uvicorn serve_qwen3:app --host 0.0.0.0 --port 8000
 
 ## 📊 Compute Planning with Scaling Laws
 
-The `flops_parameter_counting/` module provides **detailed academic formulas** (not simplified 6ND) for:
+The `training_planner/` module provides **detailed academic formulas** (not simplified 6ND) for:
 
 ### Forward Analysis: Model → FLOPs
 
 ```bash
-python detailed_cost_analysis.py --model_config configs/models/llama_7b_config.json
+cd training_planner
+python analyze.py --model_config configs/models/llama_7b_config.json
 ```
 
 Output includes:
@@ -218,7 +215,7 @@ Output includes:
 ### Backward Scaling: Compute Budget → Optimal (N, D)
 
 ```bash
-python detailed_cost_analysis.py --backward_config configs/scaling_laws/backward_scaling_config.jsonc
+python analyze.py --backward_config configs/scaling_laws/hoffmann/backward_scaling_config.jsonc
 ```
 
 Solves for **optimal training tokens D** given:
@@ -255,7 +252,7 @@ Step 5: Predicted loss (Chinchilla)
 
 ## ⚡ MFU (Model FLOPs Utilization)
 
-Architecture-aware MFU calculation:
+Architecture-aware MFU calculation (integrated in `training_planner/`):
 
 ```python
 # Forward pass FLOPs per layer:
@@ -363,25 +360,29 @@ python train.py config/full_custom.py \
 ### Core Guides
 - `enhanced_training_system/README.md` - Full training guide
 - `enhanced_training_system/docs/` - 50+ detailed docs
-- `flops_parameter_counting/README.md` - Scaling law analysis
-- `flops_parameter_counting/docs/ACADEMIC_FORMULAS_README.md` - FLOPs formulas
+- `training_planner/README.md` - Scaling law analysis
+- `training_planner/docs/01_academic_formulas.md` - FLOPs formulas
 
 ### Quick References
+- `post_training/README.md` - SFT & DPO guide
 - `evaluation_system/README.md` - Benchmark evaluation
 - `serving_system/README.md` - Deployment guide
-- `MFU_compute/README.md` - MFU calculation
 
 ---
 
-## 🔬 Historical: system_implementation/
+## 📦 Archive
 
-The `system_implementation/` folder contains **early-stage prototypes** that were later refined into the production `enhanced_training_system`:
+The `archive/` folder contains historical development artifacts preserved for reference:
 
-- `phase1_zero1/` → ZeRO-1 optimizer sharding (now in train.py)
-- `phase2_triton/` → Triton kernel experiments (replaced by FlashAttention-2)
-- `phase3_fsdp/` → FSDP prototypes (now optional in train.py)
+| Folder | Original | Contents |
+|--------|----------|----------|
+| `development_phases/` | `system_implementation/` | nanoGPT → ZeRO-1 → Triton → FSDP progression |
+| `scaling_law_standalone/` | `scaling_law/` | Early scaling law analysis tool |
+| `mfu_compute_standalone/` | `MFU_compute/` | Standalone MFU calculator |
+| `legacy_cost_analysis/` | `legacy/` | Deprecated cost scripts |
+| `intermediate_sharing/` | `system_branch/` | Cross-repo sharing artifacts |
 
-These are preserved for reference but not actively maintained.
+These modules have been **superseded by `training_planner/`** which integrates all functionality.
 
 ---
 

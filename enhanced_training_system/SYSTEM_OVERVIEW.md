@@ -206,7 +206,7 @@ Total: 25.2M params per layer (50% reduction)
 
 ### FLOPs Calculation Impact
 
-**Reference:** `flops_parameter_counting/detailed_cost_analysis.py:377-387`
+**Reference:** `training_planner/analyze.py`
 
 GQA reduces FLOPs for QKV projections:
 ```python
