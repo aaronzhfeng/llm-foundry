@@ -1,0 +1,137 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand*\HyPL@Entry[1]{}
+\HyPL@Entry{0<</S/D>>}
+\providecommand \oddpage@label [2]{}
+\@writefile{toc}{\@ifundefined {etoctocstyle}{\let \etoc@startlocaltoc \@gobble \let \etoc@settocdepth \@gobble \let \etoc@depthtag \@gobble \let \etoc@setlocaltop \@gobble }{}}
+\@writefile{toc}{\etoc@startlocaltoc{1}}
+\citation{dao2023flashattn2}
+\citation{micikevicius2017mixed}
+\citation{rajbhandari2020zero,zhao2023fsdp}
+\citation{shazeer2020glu}
+\citation{zhang2019rmsnorm}
+\citation{su2021rope}
+\citation{tillet2019triton}
+\citation{shoeybi2019megatron}
+\citation{rasley2020deepspeed}
+\citation{karpathy2022nanogpt}
+\citation{radford2019language}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{2}{section.1}\protected@file@percent }
+\citation{jang2022transformer}
+\citation{epochai2024backward}
+\citation{dao2023flashattn2}
+\citation{zhang2019rmsnorm}
+\citation{su2021rope}
+\citation{shazeer2020glu}
+\citation{rajbhandari2020zero}
+\citation{zhao2023fsdp}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Methods}{3}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Implementation Overview}{3}{subsection.2.1}\protected@file@percent }
+\citation{pytorch_profiler}
+\citation{nsight_systems}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Model Architecture Selection}{4}{subsection.2.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Architecture comparison between LLaMA and Qwen3 models. The plots show training loss, validation loss, MFU, and throughput across training iterations. Qwen3 achieves lower final loss despite lower MFU, demonstrating that architectural improvements can outweigh efficiency costs.}}{4}{figure.1}\protected@file@percent }
+\newlabel{fig:arch_comparison}{{1}{4}{Architecture comparison between LLaMA and Qwen3 models. The plots show training loss, validation loss, MFU, and throughput across training iterations. Qwen3 achieves lower final loss despite lower MFU, demonstrating that architectural improvements can outweigh efficiency costs}{figure.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Detailed training analysis of the Qwen3 1.8B model showing loss curves, MFU trends, and throughput metrics. The model demonstrates stable training dynamics with consistent MFU and monotonically decreasing loss throughout the training run, validating our architecture choice.}}{5}{figure.2}\protected@file@percent }
+\newlabel{fig:qwen3_analysis}{{2}{5}{Detailed training analysis of the Qwen3 1.8B model showing loss curves, MFU trends, and throughput metrics. The model demonstrates stable training dynamics with consistent MFU and monotonically decreasing loss throughout the training run, validating our architecture choice}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Benchmarking and Profiling}{5}{subsection.2.3}\protected@file@percent }
+\citation{micikevicius2018mixed,nvidia_amp_guide}
+\citation{chen2016training,gruslys2016memory}
+\citation{rajbhandari2020zero,zhao2023pytorchfsdp}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces NVTX Range Summary (nvtx\_sum)}}{6}{table.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}VRAM Optimization}{6}{subsection.2.4}\protected@file@percent }
+\citation{shoeybi2019megatron}
+\citation{shoeybi2019megatron}
+\citation{huang2019gpipe}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Inference Optimization Strategies}{7}{subsection.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6}Parallelization Strategies}{7}{subsection.2.6}\protected@file@percent }
+\citation{hoffmann2022chinchilla}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7}Tentative Final System for Training}{8}{subsection.2.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Results}{9}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Experimental Setup}{9}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Training Performance Results}{10}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Small-Scale Training (2× A6000)}{10}{subsubsection.3.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Training Performance on 2× A6000 GPUs (ZeRO-1, 200 iterations)}}{10}{table.2}\protected@file@percent }
+\newlabel{tab:training_performance_a6000}{{2}{10}{Training Performance on 2× A6000 GPUs (ZeRO-1, 200 iterations)}{table.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Large-Scale Training (8× B200)}{10}{subsubsection.3.2.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Model Training Visualizations from the 8× B200 large-scale training run.}}{11}{figure.3}\protected@file@percent }
+\newlabel{fig:training_results}{{3}{11}{Model Training Visualizations from the 8× B200 large-scale training run}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Evaluation Results}{11}{subsection.3.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Benchmark Evaluation Results for Qwen3 1.8B}}{11}{table.3}\protected@file@percent }
+\newlabel{tab:evaluation_results}{{3}{11}{Benchmark Evaluation Results for Qwen3 1.8B}{table.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Post-Training Results}{12}{subsection.3.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Post-Training Benchmark Comparison}}{12}{table.4}\protected@file@percent }
+\newlabel{tab:post_training_results}{{4}{12}{Post-Training Benchmark Comparison}{table.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Discussion}{12}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}System Design Effectiveness}{12}{subsection.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Benchmark comparison across Base, SFT, and DPO models. SFT provides the largest gains on knowledge-intensive tasks (OpenBookQA, ARC-Challenge), while DPO shows additional improvement on ARC-Easy. Both post-training stages demonstrate consistent improvements over the base model.}}{13}{figure.4}\protected@file@percent }
+\newlabel{fig:post_training_comparison}{{4}{13}{Benchmark comparison across Base, SFT, and DPO models. SFT provides the largest gains on knowledge-intensive tasks (OpenBookQA, ARC-Challenge), while DPO shows additional improvement on ARC-Easy. Both post-training stages demonstrate consistent improvements over the base model}{figure.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}MFU and Throughput Analysis}{13}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Memory Efficiency and Optimization Trade-offs}{14}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Evaluation Results and Model Quality}{14}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Limitations and Future Work}{15}{subsection.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Implications for Academic LLM Training}{16}{subsection.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{16}{section.5}\protected@file@percent }
+\bibdata{reference}
+\bibcite{epochai2024backward}{{1}{2024}{{AI}}{{AI}}}
+\bibcite{chen2016training}{{2}{2016}{{Chen et~al.}}{{Chen, Xu, Zhang and Guestrin}}}
+\bibcite{dao2023flashattn2}{{3}{2023}{{Dao}}{{Dao}}}
+\bibcite{gruslys2016memory}{{4}{2016}{{Gruslys et~al.}}{{Gruslys, Munos, Danihelka, Lanctot and Graves}}}
+\bibcite{hoffmann2022chinchilla}{{5}{2022}{{Hoffmann et~al.}}{{Hoffmann, Borgeaud, Mensch et~al.}}}
+\bibcite{nsight_systems}{{6}{2022}{{Horowitz}}{{Horowitz}}}
+\bibcite{huang2019gpipe}{{7}{2019}{{Huang et~al.}}{{Huang, Cheng, Bapna, Firat, Chen, Chen, Zhou and Wu}}}
+\bibcite{jang2022transformer}{{8}{2022}{{Jang}}{{Jang}}}
+\bibcite{karpathy2022nanogpt}{{9}{2022}{{Karpathy}}{{Karpathy}}}
+\bibcite{micikevicius2018mixed}{{10}{2018b}{{Micikevicius et~al.}}{{Micikevicius, Narang, Alben, Diamos, Elsen, Garcia, Ginsburg, Houston, Kuchaiev, Venkatesh and Wu}}}
+\bibcite{micikevicius2017mixed}{{11}{2018a}{{Micikevicius et~al.}}{{Micikevicius, Narang, Alben, Diamos, Elsen, Garcia, Ginsburg, Houston, Kuchaiev, Venkatesh and Wu}}}
+\bibcite{nvidia_amp_guide}{{12}{2023}{{NVIDIA Corporation}}{{NVIDIA Corporation}}}
+\@writefile{toc}{\contentsline {section}{References}{17}{section*.1}\protected@file@percent }
+\bibcite{pytorch_profiler}{{13}{2025}{{PyTorch Developers}}{{PyTorch Developers}}}
+\bibcite{radford2019language}{{14}{2019}{{Radford et~al.}}{{Radford, Wu, Child, Luan, Amodei and Sutskever}}}
+\bibcite{rajbhandari2020zero}{{15}{2020}{{Rajbhandari et~al.}}{{Rajbhandari, Rasley, Ruwase and He}}}
+\bibcite{rasley2020deepspeed}{{16}{2020}{{Rasley et~al.}}{{Rasley, Rajbhandari, Rasley and et~al.}}}
+\bibcite{shazeer2020glu}{{17}{2020}{{Shazeer}}{{Shazeer}}}
+\bibcite{shoeybi2019megatron}{{18}{2020}{{Shoeybi et~al.}}{{Shoeybi, Patwary, Puri, LeGresley, Casper and Catanzaro}}}
+\bibcite{su2021rope}{{19}{2021}{{Su et~al.}}{{Su, Lu, Pan, Miao and et~al.}}}
+\bibcite{tillet2019triton}{{20}{2019}{{Tillet, Kung and Cox}}{{Tillet, Kung and Cox}}}
+\bibcite{zhang2019rmsnorm}{{21}{2019}{{Zhang and Sennrich}}{{Zhang and Sennrich}}}
+\bibcite{zhao2023fsdp}{{22}{2023}{{Zhao et~al.}}{{Zhao, Zheng, Zhu, Xu, Fan, Zheng, Jain, Lian et~al.}}}
+\bibcite{zhao2023pytorchfsdp}{{23}{2023}{{Zhao et~al.}}{{Zhao, Gu, Varma, Luo, Huang, Xu, Wright, Shojanazeri, Ott, Shleifer, Desmaison, Balioglu, Damania, Nguyen, Chauhan, Hao, Mathews and Li}}}
+\bibstyle{style/dsc180bibstyle}
+\HyPL@Entry{18<</P(\376\377\000A)/S/D>>}
+\@writefile{toc}{\contentsline {section}{Appendices}{A1}{section*.3}\protected@file@percent }
+\@writefile{toc}{\etoc@startlocaltoc{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Training Details}{A1}{subsection.A.1}\protected@file@percent }
+\newlabel{app:training-details}{{A.1}{A1}{Training Details}{subsection.A.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {A.1.1}Hardware \& System Configuration}{A1}{subsubsection.A.1.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {A\nobreakspace {}1}{\ignorespaces Hardware and system configuration used for Qwen3-1.8B pre-training.}}{A1}{table.1}\protected@file@percent }
+\newlabel{tab:hardware}{{A\nobreakspace {}1}{A1}{Hardware and system configuration used for Qwen3-1.8B pre-training}{table.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {A.1.2}Model Hyperparameters (Qwen3-1.8B)}{A1}{subsubsection.A.1.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {A\nobreakspace {}2}{\ignorespaces Core architectural hyperparameters for the Qwen3-1.8B model.}}{A2}{table.2}\protected@file@percent }
+\newlabel{tab:model-hparams}{{A\nobreakspace {}2}{A2}{Core architectural hyperparameters for the Qwen3-1.8B model}{table.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {A.1.3}Optimization \& Training Regime}{A2}{subsubsection.A.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Objective.}{A2}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Batch size and token budget.}{A2}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Optimizer and regularization.}{A3}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {A.1.4}Software Stack \& Acceleration}{A3}{subsubsection.A.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {A.1.5}Dataset and Data Pipeline}{A4}{subsubsection.A.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Dataset.}{A4}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Preprocessing and sequence packing.}{A4}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Evaluation Details}{A5}{subsection.A.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {A.2.1}Evaluation Method}{A5}{subsubsection.A.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {A.2.2}Evaluation Dataset Examples}{A6}{subsubsection.A.2.2}\protected@file@percent }
+\gdef \@abspage@last{24}

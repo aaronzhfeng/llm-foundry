@@ -1,0 +1,142 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  This bbl file is created by econ.bst ver.2.1
+%  The latest econ.bst is available at
+%  <http://shirotakeda.org/home/tex/econ-bst.html>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{thebibliography}{xxx}
+
+\harvarditem[AI]{AI}{2024}{epochai2024backward}
+\textbf{AI, Epoch.} 2024. ``What's the backward-forward FLOP ratio for neural
+  networks?.'' \url{https://epoch.ai/blog/backward-forward-FLOP-ratio}
+
+\harvarditem[Chen et~al.]{Chen, Xu, Zhang and Guestrin}{2016}{chen2016training}
+\textbf{Chen, Tianqi, Bing Xu, Chiyuan Zhang, and Carlos Guestrin.} 2016.
+  ``Training Deep Nets with Sublinear Memory Cost.''
+  \href{https://arxiv.org/abs/1604.06174}{[Link]}
+
+\harvarditem[Dao]{Dao}{2023}{dao2023flashattn2}
+\textbf{Dao, Tri.} 2023. ``FlashAttention-2: Faster Attention with Better
+  Parallelism and Work Partitioning.'' {\it arXiv preprint arXiv:2307.08691}
+
+\harvarditem[Gruslys et~al.]{Gruslys, Munos, Danihelka, Lanctot and
+  Graves}{2016}{gruslys2016memory}
+\textbf{Gruslys, Audrunas, Remi Munos, Ivo Danihelka, Marc Lanctot, and Alex
+  Graves.} 2016. ``Memory-efficient Backpropagation Through Time.'' In  {\it
+  Advances in Neural Information Processing Systems (NeurIPS)}.
+
+\harvarditem[Hoffmann et~al.]{Hoffmann, Borgeaud, Mensch
+  et~al.}{2022}{hoffmann2022chinchilla}
+\textbf{Hoffmann, Jordan, Sebastian Borgeaud, Arthur Mensch et~al.} 2022.
+  ``Training Compute-Optimal Large Language Models.'' {\it arXiv preprint
+  arXiv:2203.15556}
+
+\harvarditem[Horowitz]{Horowitz}{2022}{nsight_systems}
+\textbf{Horowitz, Daniel.} 2022.  {\it Profiling Deep Learning with Nsight
+  Systems}.
+  \href{https://www.alcf.anl.gov/sites/default/files/2024-07/Nsight-Systems-DL-Profiling-2022-06-30.pdf}{[Link]}
+
+\harvarditem[Huang et~al.]{Huang, Cheng, Bapna, Firat, Chen, Chen, Zhou and
+  Wu}{2019}{huang2019gpipe}
+\textbf{Huang, Yanping, Youlong Cheng, Ankur Bapna, Orhan Firat, Mia Chen,
+  Dehao Chen, Mohammad Zhou, and Yonghui Wu.} 2019. ``GPipe: Efficient Training
+  of Giant Neural Networks using Pipeline Parallelism.'' In  {\it Advances in
+  Neural Information Processing Systems}.
+
+\harvarditem[Jang]{Jang}{2022}{jang2022transformer}
+\textbf{Jang, Insu.} 2022. ``Analysis of Transformer Model.''
+  \url{https://insujang.github.io/2022-07-30/analysis-of-transformer-model/}
+
+\harvarditem[Karpathy]{Karpathy}{2022}{karpathy2022nanogpt}
+\textbf{Karpathy, Andrej.} 2022. ``nanoGPT: The simplest, fastest repository
+  for training/finetuning medium-sized GPTs.''
+  \url{https://github.com/karpathy/nanoGPT}
+
+\harvarditem[Micikevicius et~al.]{Micikevicius, Narang, Alben, Diamos, Elsen,
+  Garcia, Ginsburg, Houston, Kuchaiev, Venkatesh and
+  Wu}{2018b}{micikevicius2018mixed}
+\textbf{Micikevicius, Paulius, Sharan Narang, Jonah Alben, Greg Diamos, Erich
+  Elsen, David Garcia, Boris Ginsburg, Michael Houston, Oleksii Kuchaiev,
+  Ganesh Venkatesh, and Hao Wu.} 2018b. ``Mixed Precision Training.'' {\it
+  International Conference on Learning Representations (ICLR)}
+
+\harvarditem[Micikevicius et~al.]{Micikevicius, Narang, Alben, Diamos, Elsen,
+  Garcia, Ginsburg, Houston, Kuchaiev, Venkatesh and
+  Wu}{2018a}{micikevicius2017mixed}
+\textbf{Micikevicius, Paulius, Sharan Narang, Jonah Alben, Greg Diamos, Erich
+  Elsen, David Garcia, Boris Ginsburg, Mike Houston, Oleksii Kuchaiev, Ganesh
+  Venkatesh, and Hao Wu.} 2018a. ``Mixed precision training.'' In  {\it
+  International Conference on Learning Representations}.
+
+\harvarditem[{NVIDIA Corporation}]{{NVIDIA
+  Corporation}}{2023}{nvidia_amp_guide}
+\textbf{{NVIDIA Corporation}.} 2023. ``NVIDIA Apex and Automatic Mixed
+  Precision (AMP) Documentation.''
+  \url{https://docs.nvidia.com/deeplearning/performance/mixed-precision-training/index.html}
+
+\harvarditem[{PyTorch Developers}]{{PyTorch
+  Developers}}{2025}{pytorch_profiler}
+\textbf{{PyTorch Developers}.} 2025.  {\it torch.profiler — PyTorch
+  Profiler}. \href{https://docs.pytorch.org/docs/stable/profiler.html}{[Link]}
+
+\harvarditem[Radford et~al.]{Radford, Wu, Child, Luan, Amodei and
+  Sutskever}{2019}{radford2019language}
+\textbf{Radford, Alec, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, and
+  Ilya Sutskever.} 2019. ``Language Models are Unsupervised Multitask
+  Learners.'' {\it OpenAI blog} 1\hspace{0.2ex}(8), p.~9
+
+\harvarditem[Rajbhandari et~al.]{Rajbhandari, Rasley, Ruwase and
+  He}{2020}{rajbhandari2020zero}
+\textbf{Rajbhandari, Samyam, Jeff Rasley, Olatunji Ruwase, and Yuxiong He.}
+  2020. ``ZeRO: Memory Optimizations Toward Training Trillion Parameter
+  Models.'' \href{https://arxiv.org/abs/1910.02054}{[Link]}
+
+\harvarditem[Rasley et~al.]{Rasley, Rajbhandari, Rasley and
+  et~al.}{2020}{rasley2020deepspeed}
+\textbf{Rasley, Jeff, Samyam Rajbhandari, Jeff Rasley, and et~al.} 2020.
+  ``DeepSpeed: System Optimizations Enable Training Deep Learning Models with
+  Over 100 Billion Parameters.'' {\it arXiv preprint arXiv:2007.03039}
+
+\harvarditem[Shazeer]{Shazeer}{2020}{shazeer2020glu}
+\textbf{Shazeer, Noam.} 2020. ``GLU Variants Improve Transformer.'' {\it arXiv
+  preprint arXiv:2002.05202}
+
+\harvarditem[Shoeybi et~al.]{Shoeybi, Patwary, Puri, LeGresley, Casper and
+  Catanzaro}{2020}{shoeybi2019megatron}
+\textbf{Shoeybi, Mohammad, Mostofa Patwary, Raul Puri, Patrick LeGresley, Jared
+  Casper, and Bryan Catanzaro.} 2020. ``Megatron-LM: Training Multi-Billion
+  Parameter Language Models Using Model Parallelism.'' In  {\it International
+  Conference on Learning Representations}.
+
+\harvarditem[Su et~al.]{Su, Lu, Pan, Miao and et~al.}{2021}{su2021rope}
+\textbf{Su, Jianlin, Yu~Lu, Shengfeng Pan, Bo~Miao, and et~al.} 2021.
+  ``Roformer: Enhanced Transformer with Rotary Position Embedding.'' {\it arXiv
+  preprint arXiv:2104.09864}
+
+\harvarditem[Tillet, Kung and Cox]{Tillet, Kung and
+  Cox}{2019}{tillet2019triton}
+\textbf{Tillet, Philippe, Jeremy Kung, and David Cox.} 2019. ``Triton: An
+  Intermediate Language and Compiler for Tiled Neural Network Computations.''
+  In  {\it Proceedings of the 3rd ACM SIGPLAN International Workshop on Machine
+  Learning and Programming Languages}.
+
+\harvarditem[Zhang and Sennrich]{Zhang and Sennrich}{2019}{zhang2019rmsnorm}
+\textbf{Zhang, Biao, and Rico Sennrich.} 2019. ``Root Mean Square Layer
+  Normalization.'' In  {\it Advances in Neural Information Processing Systems}.
+
+\harvarditem[Zhao et~al.]{Zhao, Zheng, Zhu, Xu, Fan, Zheng, Jain, Lian
+  et~al.}{2023}{zhao2023fsdp}
+\textbf{Zhao, Michael, Le~Zheng, Eddie Zhu, Shibo Xu, Xingyu Fan, Wei Zheng,
+  Ashish Jain, Chen Lian et~al.} 2023. ``PyTorch FSDP: Experiences on Scaling
+  Fully Sharded Data Parallel.'' {\it arXiv preprint arXiv:2307.03797}
+
+\harvarditem[Zhao et~al.]{Zhao, Gu, Varma, Luo, Huang, Xu, Wright, Shojanazeri,
+  Ott, Shleifer, Desmaison, Balioglu, Damania, Nguyen, Chauhan, Hao, Mathews
+  and Li}{2023}{zhao2023pytorchfsdp}
+\textbf{Zhao, Yanli, Andrew Gu, Rohan Varma, Liang Luo, Chien-Chin Huang, Min
+  Xu, Less Wright, Hamid Shojanazeri, Myle Ott, Sam Shleifer, Alban Desmaison,
+  Can Balioglu, Pritam Damania, Bernard Nguyen, Geeta Chauhan, Yuchen Hao, Ajit
+  Mathews, and Shen Li.} 2023. ``PyTorch FSDP: Experiences on Scaling Fully
+  Sharded Data Parallel.''
+
+\end{thebibliography}

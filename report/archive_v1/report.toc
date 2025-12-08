@@ -1,0 +1,41 @@
+\@ifundefined {etoctocstyle}{\let \etoc@startlocaltoc \@gobble \let \etoc@settocdepth \@gobble \let \etoc@depthtag \@gobble \let \etoc@setlocaltop \@gobble }{}
+\etoc@startlocaltoc {1}
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {section}{\numberline {2}Methods}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Implementation Overview}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Benchmarking and Profiling}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}VRAM Optimization}{4}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Inference Optimization Strategies}{5}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Parallelization Strategies}{6}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Tentative Final System for Training}{6}{subsection.2.6}%
+\contentsline {section}{\numberline {3}Results}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Experimental Setup}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Training Performance Results}{8}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Small-Scale Training (2× A6000)}{8}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Large-Scale Training (8× B200)}{9}{subsubsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.3}Evaluation Results}{9}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Discussion}{10}{section.4}%
+\contentsline {subsection}{\numberline {4.1}System Design Effectiveness}{10}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}MFU and Throughput Analysis}{11}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Memory Efficiency and Optimization Trade-offs}{11}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Evaluation Results and Model Quality}{12}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Limitations and Future Work}{12}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Implications for Academic LLM Training}{13}{subsection.4.6}%
+\contentsline {section}{\numberline {5}Conclusion}{13}{section.5}%
+\contentsline {section}{References}{14}{section*.1}%
+\contentsline {section}{Appendices}{A1}{section*.2}%
+\etoc@startlocaltoc {2}
+\contentsline {subsection}{\numberline {A.1}Training Details}{A1}{subsection.A.1}%
+\contentsline {subsubsection}{\numberline {A.1.1}Hardware \& System Configuration}{A1}{subsubsection.A.1.1}%
+\contentsline {subsubsection}{\numberline {A.1.2}Model Hyperparameters (Qwen3-1.8B)}{A1}{subsubsection.A.1.2}%
+\contentsline {subsubsection}{\numberline {A.1.3}Optimization \& Training Regime}{A2}{subsubsection.A.1.3}%
+\contentsline {paragraph}{Objective.}{A2}{section*.3}%
+\contentsline {paragraph}{Batch size and token budget.}{A2}{section*.4}%
+\contentsline {paragraph}{Optimizer and regularization.}{A3}{section*.5}%
+\contentsline {subsubsection}{\numberline {A.1.4}Software Stack \& Acceleration}{A3}{subsubsection.A.1.4}%
+\contentsline {subsubsection}{\numberline {A.1.5}Dataset and Data Pipeline}{A4}{subsubsection.A.1.5}%
+\contentsline {paragraph}{Dataset.}{A4}{section*.6}%
+\contentsline {paragraph}{Preprocessing and sequence packing.}{A4}{section*.7}%
+\contentsline {subsection}{\numberline {A.2}Evaluation Details}{A5}{subsection.A.2}%
+\contentsline {subsubsection}{\numberline {A.2.1}Evaluation Method}{A5}{subsubsection.A.2.1}%
+\contentsline {subsubsection}{\numberline {A.2.2}Evaluation Dataset Examples}{A6}{subsubsection.A.2.2}%

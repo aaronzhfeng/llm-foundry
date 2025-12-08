@@ -30,7 +30,7 @@
 
 \begin{abstract}
 
-We present a complete training system for efficiently training large language models under strict academic compute constraints. Our system was designed to maximize throughput and Model FLOPs Utilization (MFU) within a 60-hour budget on 8×NVIDIA B200 GPUs by assembling a lean, reliable training stack. Our end-to-end system adopts Distributed Data Parallel with ZeRO-1 optimizer state sharding as the primary parallelism strategy, FlashAttention-2 for bandwidth-efficient attention, BF16 mixed precision, and PyTorch Compile for kernel-level optimizations. We implemented a modular architecture system supporting multiple model variants, comprehensive performance monitoring with academic formula-based MFU calculation, and flexible attention backends with automatic fallback. We successfully completed a full-scale training run processing 117 billion tokens, achieving 36.7\% MFU and 160,000 tokens/second throughput. The trained model demonstrates non-trivial capabilities, achieving 52.6\% accuracy on ARC-Easy, more than double the random baseline. We further implemented post-training optimization including Supervised Fine-Tuning (SFT) and Direct Preference Optimization (DPO), achieving improvements of up to 2.6\% on benchmark tasks. Our results demonstrate that careful system engineering enables meaningful LLM training within academic compute budgets, providing a foundation for future research in resource-constrained settings. 
+We present a complete training system for efficiently training large language models under strict academic compute constraints. Our system was designed to maximize throughput and Model FLOPs Utilization (MFU) within a 60-hour budget on 8×NVIDIA B200 GPUs by assembling a lean, reliable training stack. Our end-to-end system adopts Distributed Data Parallel with ZeRO-1 optimizer state sharding as the primary parallelism strategy, FlashAttention-2 for bandwidth-efficient attention, BF16 mixed precision, and PyTorch Compile for kernel-level optimizations. We implemented a modular architecture system supporting multiple model variants, comprehensive performance monitoring with academic formula-based MFU calculation, and flexible attention backends with automatic fallback. We successfully completed a full-scale training run processing 117 billion tokens, achieving 36.7\% MFU and 160,000 tokens/second throughput. The trained model demonstrates non-trivial capabilities, achieving 52.6\% accuracy on ARC-Easy, more than double the random baseline. Our results demonstrate that careful system engineering enables meaningful LLM training within academic compute budgets, providing a foundation for future research in resource-constrained settings. 
 
 \end{abstract}
 
@@ -79,34 +79,6 @@ We implemented automatic hardware detection for peak FLOPs across GPU families (
 Following modern LLM design, we modularized architectural components for flexible experimentation: normalization strategies (LayerNorm, LayerNorm without bias, RMSNorm \cite{zhang2019rmsnorm}), activation functions (GELU, SiLU/Swish, ReLU), position encodings (learned absolute, RoPE \cite{su2021rope}, none), and feed-forward variants (standard, SwiGLU \cite{shazeer2020glu}). Configurations use presets (\texttt{gpt2}, \texttt{llama}, \texttt{custom}) or individual components, enabling architecture replication without code modification.
 
 The complete pipeline integrates these enhancements with PyTorch's distributed frameworks, supporting Data Parallel (DDP), ZeRO-1 optimizer sharding \cite{rajbhandari2020zero}, and optional Fully Sharded Data Parallel (FSDP) \cite{zhao2023fsdp}. All runs automatically generate JSON logs containing configuration snapshots, per-iteration metrics, evaluation results, and checkpoint metadata for full reproducibility and systematic comparison.
-
-\subsection{Model Architecture Selection}
-
-A key design decision was selecting the optimal model architecture for our compute budget. We systematically compared multiple architectures—GPT-2 1.29B, LLaMA2 1.36B, LLaMA3 2.2B, and Qwen3 1.8B—to understand the trade-offs between MFU, model quality, and training efficiency. Figure~\ref{fig:arch_comparison} shows a direct comparison between LLaMA-style and Qwen3-style architectures during training.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.85\linewidth]{figure/LLaMA_vs_Qwen3_comparison.png}
-    \caption{Architecture comparison between LLaMA and Qwen3 models. The plots show training loss, validation loss, MFU, and throughput across training iterations. Qwen3 achieves lower final loss despite lower MFU, demonstrating that architectural improvements can outweigh efficiency costs.}
-    \label{fig:arch_comparison}
-\end{figure}
-
-The key observations from our architecture comparison experiments are:
-
-\begin{itemize}
-    \item \textbf{GPT-2 1.29B} achieved the highest MFU (35--40\%) due to its simpler architecture (standard FFN, 50K vocabulary), but suffered from higher validation loss (2.10).
-    \item \textbf{LLaMA2 1.36B} provided a middle ground with 30--35\% MFU and competitive loss, benefiting from SwiGLU and RoPE.
-    \item \textbf{Qwen3 1.8B} achieved the lowest validation loss (2.02) despite lower MFU (27--28\% on A6000), indicating superior quality per parameter.
-\end{itemize}
-
-The trade-off between MFU and model quality led us to select Qwen3 1.8B as our flagship model. While it has lower hardware utilization due to its larger vocabulary (151K tokens) and GQA mechanism, the improved model quality justified this choice for our academic training objectives.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.85\linewidth]{figure/Qwen3_1.8B_Optimal_analysis.png}
-    \caption{Detailed training analysis of the Qwen3 1.8B model showing loss curves, MFU trends, and throughput metrics. The model demonstrates stable training dynamics with consistent MFU and monotonically decreasing loss throughout the training run, validating our architecture choice.}
-    \label{fig:qwen3_analysis}
-\end{figure}
 
 \subsection{Benchmarking and Profiling}
 
@@ -244,14 +216,7 @@ The Qwen3 1.8B model achieved the lowest validation loss (2.02) despite having l
 
 \subsubsection{Large-Scale Training (8× B200)}
 
-The Qwen3 1.8B model trained on 8× B200 GPUs achieved an average MFU of 36.7\% over the course of training. The training run processed 116.8 billion tokens (99.8\% of the target 117 billion tokens) over 162,000 iterations, completing within the 60-hour budget. The average throughput was approximately 160,000 tokens per second across all 8 GPUs. The model's training loss decreased from an initial value of approximately 7.0 to a final value of approximately 2.1. Peak memory usage per GPU was approximately 50--60 GB, well within the 192 GB capacity of B200 GPUs. Figure~\ref{fig:training_results} shows a complete suite of training visualizations from this run.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.90\linewidth]{figure/train_result.png}
-    \caption{Model Training Visualizations from the 8× B200 large-scale training run.}
-    \label{fig:training_results}
-\end{figure}
+The Qwen3 1.8B model trained on 8× B200 GPUs achieved an average MFU of 36.7\% over the course of training. The training run processed 116.8 billion tokens (99.8\% of the target 117 billion tokens) over 162,000 iterations, completing within the 60-hour budget. The average throughput was approximately 160,000 tokens per second across all 8 GPUs. The model's training loss decreased from an initial value of approximately 7.0 to a final value of approximately 2.1. Peak memory usage per GPU was approximately 50--60 GB, well within the 192 GB capacity of B200 GPUs.
 
 \subsection{Evaluation Results}
 
@@ -276,41 +241,13 @@ The model achieved 52.6\% accuracy on ARC-Easy, more than double the random base
 
 For comparison, we evaluated the official Qwen2.5-1.5B model from HuggingFace on the same benchmarks. The official model achieved 73.6\% on ARC-Easy, 43.7\% on ARC-Challenge, and 40.2\% on OpenBookQA. Our model's performance is lower, which is expected given that: (1) our model was trained on a subset of the full dataset (117B tokens vs. the full training corpus used by the official model), (2) our model is a base model without instruction tuning, and (3) there may be differences in training data quality and preprocessing.
 
-\subsection{Post-Training Results}
+We show a complete suite of training visualizations in Figure \ref{fig:training_results}.
 
-Beyond pre-training, we implemented a post-training pipeline consisting of Supervised Fine-Tuning (SFT) and Direct Preference Optimization (DPO) to improve the model's instruction-following capabilities. SFT was performed on the Alpaca dataset (10,000 samples) for 2,800 iterations, followed by DPO training on the Anthropic HH-RLHF dataset for 800 iterations.
-
-Table~\ref{tab:post_training_results} presents the benchmark results comparing the base model with SFT and DPO variants.
-
-\begin{table}[htbp]
-\centering
-\caption{Post-Training Benchmark Comparison}
-\label{tab:post_training_results}
-\begin{tabular}{lccc}
-\toprule
-Benchmark & Base & SFT & DPO \\
-\midrule
-ARC-Easy & 52.6\% & 52.6\% & \textbf{54.9\%} \\
-ARC-Challenge & 27.2\% & \textbf{29.5\%} & 29.4\% \\
-OpenBookQA & 26.4\% & \textbf{29.0\%} & 27.2\% \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The results demonstrate that post-training yields measurable improvements:
-\begin{itemize}
-    \item \textbf{SFT} improves OpenBookQA by +2.6\% and ARC-Challenge by +2.3\%, indicating better instruction following and reasoning.
-    \item \textbf{DPO} further improves ARC-Easy by +2.3\% over the base model, suggesting enhanced preference alignment.
-    \item The gains are modest but consistent, which is expected for a 1.8B parameter model with limited post-training data.
-\end{itemize}
-
-Figure~\ref{fig:post_training_comparison} visualizes the benchmark performance across all three model variants, clearly showing the incremental improvements from each post-training stage.
-
-\begin{figure}[htbp]
+\begin{figure}
     \centering
-    \includegraphics[width=0.85\linewidth]{figure/post_training_comparison.png}
-    \caption{Benchmark comparison across Base, SFT, and DPO models. SFT provides the largest gains on knowledge-intensive tasks (OpenBookQA, ARC-Challenge), while DPO shows additional improvement on ARC-Easy. Both post-training stages demonstrate consistent improvements over the base model.}
-    \label{fig:post_training_comparison}
+    \includegraphics[width=0.98\linewidth]{figure/train_result.png}
+    \caption{Model Training Visualizations}
+    \label{fig:training_results}
 \end{figure}
 
 \section{Discussion}
@@ -343,17 +280,15 @@ Gradient accumulation proved effective for maintaining stable training with larg
 
 The evaluation results demonstrate that our training system successfully produced a functional language model, though with performance gaps compared to the official Qwen2.5-1.5B model. The 52.6\% accuracy on ARC-Easy (more than double the random baseline) indicates that the model learned meaningful patterns and reasoning capabilities. However, the lower performance on ARC-Challenge (27.2\%) and OpenBookQA (26.4\%) suggests that the model's reasoning and knowledge capabilities are still limited.
 
-Several factors likely contribute to the performance gap with the official model. First, our model was trained on 117 billion tokens, which may be less than the full training corpus used by the official model. Second, the official model benefits from extensive post-training optimization. Third, differences in data quality, preprocessing, and training stability could affect final model quality.
+Several factors likely contribute to the performance gap with the official model. First, our model was trained on 117 billion tokens, which may be less than the full training corpus used by the official model. Second, the official model may have undergone instruction tuning or other post-training optimizations that improve benchmark performance. Third, differences in data quality, preprocessing, and training stability could affect final model quality. Fourth, our model is a base model without any alignment or instruction tuning, while the official model may have additional training stages.
 
-\textbf{Post-Training Impact.} Our SFT and DPO experiments demonstrate that post-training can meaningfully improve model capabilities even with limited data. SFT on 10,000 Alpaca samples improved OpenBookQA accuracy by 2.6\% and ARC-Challenge by 2.3\%, while DPO further improved ARC-Easy by 2.3\% over the base model. These results suggest that the base model has learned useful representations that can be effectively fine-tuned for downstream tasks. The modest but consistent improvements across benchmarks validate the importance of post-training in the LLM development pipeline.
-
-The evaluation results validate that our system can successfully train models that demonstrate non-trivial capabilities, and that post-training optimization provides measurable improvements even under resource constraints.
+The evaluation results validate that our system can successfully train models that demonstrate non-trivial capabilities, but they also highlight the importance of training data quality, training duration, and post-training optimization for achieving state-of-the-art performance.
 
 \subsection{Limitations and Future Work}
 
-Our system has several limitations that could be addressed in future work. First, the MFU values, while reasonable for memory-bound workloads, could potentially be improved through further kernel optimizations, better overlap of computation and communication, or the use of CUDA graphs (which we implemented but did not enable in the final production run). In particular, incorporating recently introduced techniques such as FlashAttention 3 could reduce memory movement in attention layers and improve throughput, providing an additional path to higher MFU. Second, while we implemented both quantitative (log-probability) and qualitative (generation-based) evaluation, our qualitative analysis revealed that the 1.8B model still struggles with mathematical reasoning and complex logic tasks. Third, we did not explore the full space of parallelism strategies. While DDP with ZeRO-1 was sufficient for our model sizes, larger models would require tensor parallelism or pipeline parallelism, which our system supports but we did not evaluate. Fourth, our post-training experiments used relatively small datasets (10K Alpaca samples for SFT, limited HH-RLHF for DPO); scaling up post-training data would likely yield larger improvements.
+Our system has several limitations that could be addressed in future work. First, the MFU values, while reasonable for memory-bound workloads, could potentially be improved through further kernel optimizations, better overlap of computation and communication, or the use of CUDA graphs (which we implemented but did not enable in the final production run). In particular, incorporating recently introduced techniques such as FlashAttention 3 could reduce memory movement in attention layers and improve throughput, providing an additional path to higher MFU. Second, our evaluation was limited to log-probability benchmarks; generation-based evaluation would provide a more complete picture of model capabilities. Third, we did not explore the full space of parallelism strategies. While DDP with ZeRO-1 was sufficient for our model sizes, larger models would require tensor parallelism or pipeline parallelism, which our system supports but we did not evaluate. Fourth, our training runs were limited in duration; longer training with more tokens would likely improve model quality, as suggested by scaling laws. Moreover, we did not investigate the impact of alternative optimizers such as the Muon optimizer, which may offer improved stability or training efficiency compared to Adam-based methods.
 
-Future work could focus on: (1) optimizing MFU further through kernel fusion and CUDA graphs, as well as evaluating the integration of FlashAttention 3 to reduce attention computation overhead, (2) evaluating tensor and pipeline parallelism for larger models, (3) implementing and evaluating activation checkpointing for memory-constrained scenarios, (4) extending the system to support MoE (Mixture of Experts) architectures, and (5) scaling up post-training with larger instruction-tuning datasets and more sophisticated preference optimization techniques such as PPO or KTO. Additional directions include assessing the performance of the Muon optimizer in large-scale training regimes and investigating methods to improve mathematical and reasoning capabilities at the 1--2B parameter scale.
+Future work could focus on: (1) optimizing MFU further through kernel fusion and CUDA graphs, as well as evaluating the integration of FlashAttention 3 to reduce attention computation overhead, (2) evaluating tensor and pipeline parallelism for larger models, (3) implementing and evaluating activation checkpointing for memory-constrained scenarios, (4) extending the system to support MoE (Mixture of Experts) architectures, and (5) integrating post-training optimization techniques such as instruction tuning and DPO (Direct Preference Optimization). Additional directions include assessing the performance of the Muon optimizer in large-scale training regimes and comparing its convergence properties with existing optimizers in our stack.
 
 \subsection{Implications for Academic LLM Training}
 
@@ -361,17 +296,17 @@ Our results demonstrate that a well-engineered training system can enable meanin
 
 The system's modularity and extensibility make it suitable for research experimentation. The ability to easily swap architectural components, attention backends, and optimization strategies enables rapid iteration and comparison of different approaches. This flexibility is particularly valuable for academic research, where understanding trade-offs and exploring novel architectures is often more important than achieving the highest possible performance.
 
-However, our results also highlight the challenges of academic LLM training. The performance gap with industrial models, even when using similar architectures, suggests that data quality, training duration, and post-training scale are critical factors. Our post-training experiments demonstrate that even limited SFT and DPO can yield measurable improvements, underscoring the importance of the full training pipeline—not just pre-training—for achieving competitive model capabilities.
+However, our results also highlight the challenges of academic LLM training. The performance gap with industrial models, even when using similar architectures, suggests that data quality, training duration, and post-training optimization are critical factors that may be difficult to replicate in academic settings. This underscores the importance of open datasets, reproducible training recipes, and collaborative efforts to democratize access to high-quality LLM training.
 
 \section{Conclusion}
 
-We have successfully designed and implemented an efficient end-to-end training system for large language models that operates within strict academic compute constraints. Our system, built on nanoGPT and extended with modern optimizations, demonstrates that careful engineering can enable meaningful LLM training on limited hardware resources.
+We have successfully designed and implemented an efficient training system for large language models that operates within strict academic compute constraints. Our system, built on nanoGPT and extended with modern optimizations, demonstrates that careful engineering can enable meaningful LLM training on limited hardware resources.
 
-The key contributions of this work include: (1) a modular, extensible training framework that supports multiple architectures, attention backends, and optimization strategies; (2) comprehensive performance monitoring with academic formula-based MFU calculation; (3) validation of system design choices through experiments across multiple hardware configurations; (4) successful completion of a full-scale training run processing 117 billion tokens within a 60-hour budget on 8× B200 GPUs; and (5) implementation of a complete post-training pipeline with SFT and DPO that achieves measurable benchmark improvements.
+The key contributions of this work include: (1) a modular, extensible training framework that supports multiple architectures, attention backends, and optimization strategies; (2) comprehensive performance monitoring with academic formula-based MFU calculation; (3) validation of system design choices through experiments across multiple hardware configurations; and (4) successful completion of a full-scale training run processing 117 billion tokens within a 60-hour budget on 8× B200 GPUs.
 
-Our results show that the system achieves reasonable MFU (36.7\% on B200) and throughput (160,000 tokens/s) while maintaining memory efficiency. The trained model demonstrates non-trivial capabilities, achieving 52.6\% accuracy on ARC-Easy, more than double the random baseline. Post-training further improves performance, with SFT adding +2.6\% on OpenBookQA and DPO adding +2.3\% on ARC-Easy. While there remains a performance gap with industrial models, our work establishes a foundation for academic LLM research and demonstrates the feasibility of training and aligning capable models within resource constraints.
+Our results show that the system achieves reasonable MFU (36.7\% on B200) and throughput (160,000 tokens/s) while maintaining memory efficiency. The trained model demonstrates non-trivial capabilities, achieving 52.6\% accuracy on ARC-Easy, more than double the random baseline. While there remains a performance gap with industrial models, our work establishes a foundation for academic LLM research and demonstrates the feasibility of training capable models within resource constraints.
 
-The system's modular design and comprehensive logging infrastructure provide a solid foundation for Quarter~2 research, where we will transition from guided replication to open-ended exploration. Future work will focus on further MFU optimization, evaluation of advanced parallelism strategies, and scaling up post-training with larger datasets. This work contributes to the broader goal of democratizing access to LLM training capabilities and enabling academic researchers to contribute meaningfully to the field of large language models.
+The system's modular design and comprehensive logging infrastructure provide a solid foundation for Quarter~2 research, where we will transition from guided replication to open-ended exploration. Future work will focus on further MFU optimization, evaluation of advanced parallelism strategies, and integration of post-training optimization techniques. This work contributes to the broader goal of democratizing access to LLM training capabilities and enabling academic researchers to contribute meaningfully to the field of large language models.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% Reference / Bibliography

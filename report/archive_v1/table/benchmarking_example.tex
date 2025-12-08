@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\caption{NVTX Range Summary (nvtx\_sum)}
+\begin{tabular}{lrrrrl}
+\hline
+\textbf{Time (\%)} & \textbf{Total Time (ns)} & \textbf{Instances} & \textbf{Avg (ns)} & \textbf{Style} & \textbf{Range} \\
+\hline
+41.4 & 219949977869 & 100  & 2199499778.7 & PushPop & :train\_step \\
+21.0 & 111612815045 & 800  & 139515618.8  & PushPop & :forward \\
+20.2 & 107163704747 & 800  & 133954630.9  & PushPop & :backward \\
+14.0 & 74510601137  & 6400 & 11642281.4   & PushPop & :mha \\
+3.2  & 16764902246  & 6400 & 2619516.0    & PushPop & :mlp \\
+0.1  & 555876492    & 800  & 694845.6     & PushPop & :data\_fetch \\
+0.1  & 477917496    & 100  & 4779175.0    & PushPop & :clip\_step \\
+0.0  & 98560602     & 100  & 985606.0     & PushPop & :opt\_step \\
+0.0  & 2388822      & 100  & 23888.2      & PushPop & :sched\_step \\
+\hline
+\end{tabular}
+\end{table}
